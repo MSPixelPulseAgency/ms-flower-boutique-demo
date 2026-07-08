@@ -45,7 +45,7 @@ const brand = {
 };
 
 const img = (id, fit = 'crop') => `https://images.unsplash.com/${id}?auto=format&fit=${fit}&w=1200&q=82`;
-const heroBouquetImage = '/hero-bouquet.svg';
+const heroBouquetImage = '/hero-bouquet.jpg';
 
 const productImages = [
   img('photo-1561181286-d3fee7d55364'),
@@ -574,7 +574,7 @@ function Home() {
           <div className="button-row"><Link className="primary btn-large" to="/shop"><ButtonIcon type="shop" /> Shop Flowers</Link><a className="whatsapp-action btn-large" href={whatsappHref(productWhatsappMessage({ name: 'Custom bouquet' }))}><WhatsAppIcon /> Order by WhatsApp</a><Link className="secondary btn-large" to="/occasions/wedding"><ButtonIcon type="calendar" /> Book Wedding Consultation</Link></div>
           <div className="same-day"><Truck size={18} /> Same-day GTA delivery before {business.sameDayCutoff}. No account needed.</div>
         </div>
-        <div className="hero-visual"><ImageFrame src={heroBouquetImage} alt="Luxury blush and coral bouquet arranged for Bloom by Maryam" className="hero-photo" /><div className="floating-stat"><Sparkles /> 16 curated bouquets ready to shop</div><div className="floating-stat second"><MapPin /> Toronto and GTA delivery</div></div>
+        <div className="hero-visual"><ImageFrame src={heroBouquetImage} alt="Luxury bridal bouquet with blue hydrangeas, white roses, and fresh greenery" className="hero-photo" /><div className="floating-stat"><Sparkles /> 16 curated bouquets ready to shop</div><div className="floating-stat second"><MapPin /> Toronto and GTA delivery</div></div>
       </section>
       <section><SectionHeading eyebrow="Best sellers" title="Bouquets customers love first" text="Customer-ready bouquets with ratings, colour tags, thoughtful add-ons, and same-day delivery badges." /><div className="product-grid">{products.slice(0, 4).map((product) => <ProductCard key={product.id} product={product} />)}</div></section>
       <section className="soft-band"><SectionHeading eyebrow="Occasions" title="Shop by the moment" /><div className="occasion-grid">{occasionDetails.slice(0, 8).map((item) => <OccasionCard key={item.title} item={item} />)}</div></section>
