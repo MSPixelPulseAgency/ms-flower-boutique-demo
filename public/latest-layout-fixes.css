@@ -1,5 +1,5 @@
 /* Latest focused layout fixes requested by client.
-   - Restore a working View Details link for product cards
+   - Restore a working Quick View link for product cards
    - Keep Add to Cart + WhatsApp aligned cleanly
    - Replace hero visual with a dark blue rose/bouquet photo treatment
    - Align plan/subscription buttons full width
@@ -19,7 +19,7 @@
   opacity: 0 !important;
 }
 
-/* Product card should clearly provide a working details link, not fake full-card click */
+/* Product card should clearly provide a working Quick View link, not fake full-card click */
 .product-card {
   position: relative !important;
   cursor: default !important;
@@ -43,11 +43,13 @@
   white-space: nowrap !important;
 }
 
+/* Do not append or animate any extra Details text on Quick View */
 .product-card .product-actions > a:not(.whatsapp-action)::after {
-  content: " Details";
+  content: none !important;
+  display: none !important;
 }
 
-/* Product card button alignment: price, view row, then two equal order buttons */
+/* Product card button alignment: price, Quick View row, then two equal order buttons */
 .product-card .product-actions {
   display: grid !important;
   grid-template-columns: 1fr 1fr !important;
