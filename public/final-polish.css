@@ -1,14 +1,14 @@
 /* Final UI polish overrides for Bloom by Maryam
-   Keeps the public navigation simple, makes dropdowns readable/opaque,
-   fixes visible route labels in Contact, and tightens mobile/header/CTA polish. */
+   Clean professional nav, readable dropdowns, refined glass buttons, and mobile polish. */
 
 :root {
-  --final-glass: rgba(255, 255, 255, 0.82);
-  --final-glass-solid: rgba(255, 250, 247, 0.96);
+  --final-glass: rgba(255, 255, 255, 0.78);
+  --final-glass-solid: rgba(255, 252, 249, 0.985);
   --final-border: rgba(255, 255, 255, 0.88);
   --final-plum: #4a2433;
   --final-rose: #b84a62;
-  --final-green: #2fbf6a;
+  --final-rose-2: #d86a86;
+  --final-green: #23a765;
 }
 
 /* Cleaner, less old-fashioned hero typography */
@@ -21,10 +21,16 @@ h1 {
 .hero {
   min-height: calc(100vh - 80px) !important;
   padding-top: 72px !important;
-  background:
-    radial-gradient(circle at 8% 14%, rgba(255, 209, 102, 0.32), transparent 28%),
-    radial-gradient(circle at 84% 18%, rgba(158, 216, 255, 0.28), transparent 30%),
-    radial-gradient(circle at 78% 72%, rgba(248, 187, 208, 0.24), transparent 30%);
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.hero::before,
+.hero::after,
+.hero-copy::before,
+.hero-copy::after {
+  display: none !important;
 }
 
 .hero-copy p {
@@ -32,9 +38,26 @@ h1 {
   font-size: clamp(1rem, 1.45vw, 1.14rem) !important;
 }
 
-/* Header: still glass, but cleaner and more readable */
+/* Remove heavy boxed badges around hero text/stat lines */
+.same-day,
+.floating-stat {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  padding-left: 0 !important;
+  color: var(--final-plum) !important;
+}
+
+/* Remove the extra newsletter block the user does not want */
+.newsletter {
+  display: none !important;
+}
+
+/* Header: glassy, readable, clean */
 .site-header {
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.86), rgba(255, 255, 255, 0.62)) !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.84), rgba(255, 255, 255, 0.58)) !important;
   border-color: var(--final-border) !important;
   box-shadow: 0 20px 55px rgba(74, 36, 51, 0.13), inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
 }
@@ -48,11 +71,11 @@ h1 {
   white-space: nowrap !important;
 }
 
-/* Dropdowns: no more transparent/cluttered overlay */
+/* Dropdowns: simple professional menu, no description card */
 .mega-menu {
-  width: min(560px, calc(100vw - 36px)) !important;
-  grid-template-columns: 190px 1fr !important;
-  padding: 14px !important;
+  width: min(310px, calc(100vw - 36px)) !important;
+  grid-template-columns: 1fr !important;
+  padding: 10px !important;
   background: var(--final-glass-solid) !important;
   border: 1px solid rgba(255, 255, 255, 0.92) !important;
   box-shadow: 0 24px 60px rgba(74, 36, 51, 0.18) !important;
@@ -61,28 +84,32 @@ h1 {
 }
 
 .mega-intro {
-  background: linear-gradient(135deg, rgba(255, 241, 245, 0.98), rgba(255, 248, 240, 0.98)) !important;
-}
-
-.mega-intro p {
-  font-size: 0.84rem !important;
+  display: none !important;
 }
 
 .mega-links {
   grid-template-columns: 1fr !important;
-  gap: 8px !important;
+  gap: 6px !important;
 }
 
 .mega-links a {
   min-height: 42px !important;
   padding: 10px 14px !important;
-  background: rgba(255, 255, 255, 0.9) !important;
-  border: 1px solid rgba(184, 74, 98, 0.12) !important;
-  box-shadow: 0 8px 20px rgba(74, 36, 51, 0.05) !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
   color: var(--final-plum) !important;
+  justify-content: flex-start !important;
 }
 
-/* Keep dropdowns meaningful and small: main page + four best links only */
+.mega-links a:hover,
+.mega-links a.active {
+  background: rgba(255, 241, 245, 0.9) !important;
+  color: var(--final-rose) !important;
+  transform: none !important;
+}
+
+/* Keep dropdowns meaningful and small */
 .mega-links a:nth-child(n+6),
 .mobile-submenu a:nth-child(n+6) {
   display: none !important;
@@ -102,7 +129,7 @@ h1 {
 .desktop-nav .nav-dropdown:nth-of-type(4) .mega-links a:nth-child(5)::after,
 .mobile-nav .mobile-accordion:nth-of-type(4) .mobile-submenu a:nth-child(5)::after { content: 'Blog'; font-size: 0.88rem; }
 
-/* Simplify Events dropdown labels to the most understandable services */
+/* Simplify Events dropdown labels */
 .desktop-nav .nav-dropdown:nth-of-type(3) .mega-links a:nth-child(n+2):nth-child(-n+5),
 .mobile-nav .mobile-accordion:nth-of-type(3) .mobile-submenu a:nth-child(n+2):nth-child(-n+5) {
   font-size: 0 !important;
@@ -116,7 +143,7 @@ h1 {
 .desktop-nav .nav-dropdown:nth-of-type(3) .mega-links a:nth-child(5)::after,
 .mobile-nav .mobile-accordion:nth-of-type(3) .mobile-submenu a:nth-child(5)::after { content: 'Baby Showers'; font-size: 0.88rem; }
 
-/* Button consistency */
+/* Button consistency - more visible transparent glass */
 .primary,
 .secondary,
 .whatsapp-action,
@@ -135,6 +162,32 @@ h1 {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
+  border: 1px solid rgba(255, 255, 255, 0.74) !important;
+  backdrop-filter: blur(18px) saturate(150%) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(150%) !important;
+}
+
+.primary,
+.btn-primary,
+.product-actions button,
+.demo-form button {
+  color: #fff !important;
+  background: linear-gradient(135deg, rgba(184, 74, 98, 0.9), rgba(216, 106, 134, 0.78)) !important;
+  box-shadow: 0 16px 36px rgba(184, 74, 98, 0.24), inset 0 1px 0 rgba(255,255,255,.42) !important;
+}
+
+.secondary,
+.btn-secondary,
+.product-actions a:not(.whatsapp-action) {
+  color: var(--final-plum) !important;
+  background: rgba(255, 255, 255, 0.58) !important;
+  box-shadow: 0 12px 28px rgba(74, 36, 51, 0.08), inset 0 1px 0 rgba(255,255,255,.65) !important;
+}
+
+.whatsapp-action {
+  color: #fff !important;
+  background: linear-gradient(135deg, rgba(35, 167, 101, 0.9), rgba(59, 205, 122, 0.78)) !important;
+  box-shadow: 0 16px 36px rgba(35, 167, 101, 0.22), inset 0 1px 0 rgba(255,255,255,.42) !important;
 }
 
 .button-row {
@@ -176,12 +229,12 @@ h1 {
 .gallery-card .image-frame { aspect-ratio: 1 / 1 !important; }
 .image-frame img { width: 100% !important; height: 100% !important; object-fit: cover !important; }
 
-/* Cleaner footer CTA: lighter and more premium */
+/* Cleaner footer CTA */
 .footer-cta {
   background:
-    radial-gradient(circle at 8% 10%, rgba(255, 209, 102, 0.28), transparent 28%),
-    radial-gradient(circle at 92% 20%, rgba(158, 216, 255, 0.22), transparent 32%),
-    linear-gradient(135deg, rgba(255, 255, 255, 0.72), rgba(255, 241, 245, 0.58)) !important;
+    radial-gradient(circle at 8% 10%, rgba(255, 209, 102, 0.2), transparent 28%),
+    radial-gradient(circle at 92% 20%, rgba(158, 216, 255, 0.18), transparent 32%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.64), rgba(255, 241, 245, 0.48)) !important;
   color: var(--final-plum) !important;
   border: 1px solid rgba(255, 255, 255, 0.82) !important;
   box-shadow: 0 22px 58px rgba(74, 36, 51, 0.14) !important;
@@ -189,7 +242,7 @@ h1 {
 .footer-cta h2 { color: var(--final-plum) !important; font-size: clamp(2rem, 4vw, 3.4rem) !important; }
 .footer-cta p { color: rgba(74, 36, 51, 0.78) !important; max-width: 760px !important; }
 
-/* Mobile: compact, readable, no clutter */
+/* Mobile: standard clean menu interaction */
 @media (max-width: 900px) {
   .site-header {
     position: sticky !important;
@@ -210,7 +263,7 @@ h1 {
     margin-top: 12px !important;
     padding: 12px !important;
     border-radius: 22px !important;
-    background: rgba(255, 250, 247, 0.98) !important;
+    background: rgba(255, 252, 249, 0.985) !important;
     border: 1px solid rgba(255, 255, 255, 0.88) !important;
     box-shadow: 0 18px 46px rgba(74, 36, 51, 0.13) !important;
   }
@@ -219,13 +272,21 @@ h1 {
     min-height: 44px !important;
     padding: 11px 13px !important;
     border-radius: 16px !important;
-    background: rgba(255, 255, 255, 0.72) !important;
-    border: 1px solid rgba(184, 74, 98, 0.08) !important;
+    background: transparent !important;
+    border: 0 !important;
+    color: var(--final-plum) !important;
+    box-shadow: none !important;
+  }
+  .mobile-nav a.active,
+  .mobile-nav a:hover,
+  .mobile-accordion > button:hover {
+    background: rgba(255, 241, 245, 0.9) !important;
+    color: var(--final-rose) !important;
   }
   .mobile-submenu {
     display: grid !important;
-    gap: 7px !important;
-    padding: 8px 0 8px 10px !important;
+    gap: 4px !important;
+    padding: 4px 0 8px 14px !important;
   }
   .hero {
     min-height: auto !important;
