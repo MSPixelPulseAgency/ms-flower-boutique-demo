@@ -1,22 +1,32 @@
 /* Latest focused layout fixes requested by client.
    - Restore a working Quick View link for product cards
    - Keep Add to Cart + WhatsApp aligned cleanly
-   - Replace hero visual with a dark blue rose/bouquet photo treatment
+   - Show the actual hero-bouquet image instead of the old background override
    - Align plan/subscription buttons full width
 */
 
-/* Replace homepage hero illustration with a real rose/bouquet image and dark-blue floral treatment */
+/* Hero: show the real /hero-bouquet image from the img tag, not the old CSS background image */
 .hero-photo {
-  background-image:
-    linear-gradient(135deg, rgba(10, 28, 68, .58), rgba(20, 56, 110, .32) 46%, rgba(255, 241, 245, .08)),
-    url('https://images.unsplash.com/photo-1518895949257-7621c3c786d7?auto=format&fit=crop&w=1400&q=88') !important;
+  background: transparent !important;
+  background-image: none !important;
   background-position: center !important;
   background-size: cover !important;
   background-repeat: no-repeat !important;
-  background-blend-mode: color, normal !important;
+  background-blend-mode: normal !important;
 }
 .hero-photo img {
-  opacity: 0 !important;
+  opacity: 1 !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  object-fit: cover !important;
+  object-position: 50% 50% !important;
+  padding: 0 !important;
+  transform: none !important;
+  filter: saturate(1.03) contrast(1.02) !important;
+}
+.hero-photo::after {
+  background: linear-gradient(180deg, rgba(10, 28, 68, .06), rgba(74, 36, 51, .08)) !important;
 }
 
 /* Product card should clearly provide a working Quick View link, not fake full-card click */
