@@ -1,0 +1,59 @@
+/* Latest focused layout fixes requested by client.
+   - Hide Quick View from product cards
+   - Align Add to Cart + WhatsApp buttons cleanly
+   - Replace hero SVG visual with a reliable real bouquet photo
+*/
+
+/* Replace homepage hero illustration with reliable real bouquet image */
+.hero-photo {
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,241,245,.10)),
+    url('https://images.unsplash.com/photo-1494972308805-463bc619d34e?auto=format&fit=crop&w=1400&q=88') center/cover no-repeat !important;
+}
+.hero-photo img {
+  opacity: 0 !important;
+}
+
+/* Remove Quick View button only inside product cards */
+.product-card .product-actions > a:not(.whatsapp-action) {
+  display: none !important;
+}
+
+/* Product card button alignment: price on top, two equal buttons below */
+.product-card .product-actions {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 12px !important;
+  align-items: stretch !important;
+  width: 100% !important;
+}
+
+.product-card .product-actions > strong {
+  grid-column: 1 / -1 !important;
+  display: block !important;
+  width: 100% !important;
+  margin: 0 0 2px !important;
+  font-size: 1.05rem !important;
+}
+
+.product-card .product-actions > button,
+.product-card .product-actions > .whatsapp-action {
+  width: 100% !important;
+  min-width: 0 !important;
+  min-height: 46px !important;
+  padding: 12px 14px !important;
+  white-space: nowrap !important;
+  gap: 7px !important;
+}
+
+.product-card .product-actions > button svg,
+.product-card .product-actions > .whatsapp-action svg {
+  width: 17px !important;
+  height: 17px !important;
+}
+
+@media (max-width: 420px) {
+  .product-card .product-actions {
+    grid-template-columns: 1fr !important;
+  }
+}
