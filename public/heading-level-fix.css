@@ -1,0 +1,22 @@
+/* Keep requested h1-to-h2 page headings visually identical after runtime conversion. */
+.hero-copy > h2,
+.page-hero-copy > h2 {
+  font-family: "Playfair Display", Georgia, serif;
+  color: var(--plum);
+  line-height: 1.02;
+  margin: 0;
+  letter-spacing: 0;
+  font-size: clamp(2.85rem, 7.2vw, 5.8rem);
+  max-width: 760px;
+}
+
+.page-hero-copy > h2 {
+  font-size: clamp(2.6rem, 6vw, 5.5rem);
+}
+
+@media (max-width: 620px) {
+  .hero-copy > h2,
+  .page-hero-copy > h2 {
+    font-size: clamp(2.45rem, 13vw, 4.15rem);
+  }
+}
