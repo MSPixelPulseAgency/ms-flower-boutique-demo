@@ -6,17 +6,17 @@
   line-height: 1.02;
   margin: 0;
   letter-spacing: 0;
-  font-size: clamp(2.85rem, 7.2vw, 5.8rem);
+  font-size: clamp(2.00rem, 5.2vw, 4.8rem);
   max-width: 760px;
 }
 
 .page-hero-copy > h2 {
-  font-size: clamp(2.6rem, 6vw, 5.5rem);
+  font-size: clamp(2.00rem, 5.2vw, 4.8rem);
 }
 
 @media (max-width: 620px) {
   .hero-copy > h2,
   .page-hero-copy > h2 {
-    font-size: clamp(2.45rem, 13vw, 4.15rem);
+    font-size: clamp(2.00rem, 5.2vw, 4.8rem);
   }
 }
