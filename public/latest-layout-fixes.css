@@ -3,9 +3,10 @@
    - Keep Add to Cart + WhatsApp aligned cleanly
    - Show the actual hero-bouquet image instead of the old background override
    - Align plan/subscription buttons full width
+   - Polish shop search and filter layout
 */
 
-/* Hero: show the real /hero-bouquet image from the img tag, not the old CSS background image */
+/* Hero: show the real /hero-bouquet image from the img tag, not the old background image */
 .hero-photo {
   background: transparent !important;
   background-image: none !important;
@@ -27,6 +28,85 @@
 }
 .hero-photo::after {
   background: linear-gradient(180deg, rgba(10, 28, 68, .06), rgba(74, 36, 51, .08)) !important;
+}
+
+/* Shop search/filter bar: search full row, filters aligned cleanly */
+.filters {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) auto !important;
+  gap: 14px !important;
+  align-items: end !important;
+  padding: 20px !important;
+  margin: 0 auto 34px !important;
+  max-width: 1180px !important;
+  border-radius: 30px !important;
+}
+
+.filters > label:first-child {
+  grid-column: 1 / -1 !important;
+  display: flex !important;
+  align-items: center !important;
+  min-height: 60px !important;
+  padding: 0 18px !important;
+  gap: 12px !important;
+}
+
+.filters > label:first-child input {
+  width: 100% !important;
+}
+
+.filters label,
+.filters .checkbox {
+  min-width: 0 !important;
+}
+
+.filters select,
+.filters input[type="text"],
+.filters input:not([type]) {
+  width: 100% !important;
+}
+
+.filters .checkbox {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  min-height: 56px !important;
+  padding: 12px 16px !important;
+  border-radius: 20px !important;
+  background: rgba(255, 255, 255, .58) !important;
+  border: 1px solid rgba(184, 74, 98, .16) !important;
+  box-shadow: 0 12px 26px rgba(74, 36, 51, .07) !important;
+  font-weight: 850 !important;
+  white-space: nowrap !important;
+}
+
+.filters .checkbox input {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  width: 20px !important;
+  height: 20px !important;
+  border-radius: 7px !important;
+  border: 2px solid rgba(184, 74, 98, .38) !important;
+  background: rgba(255, 255, 255, .86) !important;
+  display: grid !important;
+  place-items: center !important;
+  margin: 0 !important;
+  flex: 0 0 auto !important;
+}
+
+.filters .checkbox input:checked {
+  background: linear-gradient(135deg, #ec3f6b, #ff8f70) !important;
+  border-color: transparent !important;
+}
+
+.filters .checkbox input:checked::after {
+  content: "" !important;
+  width: 9px !important;
+  height: 5px !important;
+  border-left: 2px solid #fff !important;
+  border-bottom: 2px solid #fff !important;
+  transform: rotate(-45deg) translateY(-1px) !important;
 }
 
 /* Product card should clearly provide a working Quick View link, not fake full-card click */
@@ -118,6 +198,34 @@
 .plan-card .button-row svg {
   width: 17px !important;
   height: 17px !important;
+}
+
+@media (max-width: 980px) {
+  .filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+  }
+  .filters > label:first-child,
+  .filters .checkbox {
+    grid-column: 1 / -1 !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .filters {
+    grid-template-columns: 1fr !important;
+    padding: 14px !important;
+    border-radius: 24px !important;
+  }
+  .filters > label:first-child {
+    min-height: 56px !important;
+    padding: 0 14px !important;
+  }
+  .filters .checkbox {
+    justify-content: flex-start !important;
+    width: 100% !important;
+    min-height: 52px !important;
+  }
 }
 
 @media (max-width: 420px) {
