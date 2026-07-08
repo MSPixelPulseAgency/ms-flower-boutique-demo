@@ -120,17 +120,11 @@ const occasionDetails = [
 const occasions = occasionDetails.map((item) => item.title);
 
 const shopMenu = [
-  ['Shop All Flowers', '/shop', 'Browse every bouquet, vase, gift box, plant, and seasonal floral design.'],
-  ['Best Sellers', '/shop?collection=best-sellers', 'Customer-loved roses, pastel bouquets, and luxury arrangements.'],
-  ['New Arrivals', '/shop?collection=new-arrivals', 'Fresh seasonal designs styled for this week’s gifting moments.'],
-  ['Luxury Collection', '/shop?collection=luxury', 'Elevated vase arrangements, rose boxes, orchids, and premium blooms.'],
-  ['Same-Day Delivery', '/shop?collection=same-day', `Florals available before the ${business.sameDayCutoff} GTA cutoff.`],
-  ['Gift Boxes', '/shop?collection=gift-boxes', 'Petite flowers paired with keepsake-style gifting details.'],
-  ['Plants', '/shop?collection=plants', 'Orchids and green gifts for homes, offices, and thoughtful gestures.'],
-  ['Subscriptions', '/subscription', 'Weekly, bi-weekly, and monthly flower plans.'],
-  ['Gift Cards', '/order-inquiry', 'Send a flexible flower gift inquiry by email or WhatsApp.'],
-  ['Seasonal Collection', '/shop?collection=seasonal', 'Canadian-season inspired stems and holiday florals.'],
-  ['Sale Items', '/shop?collection=sale', 'Limited demo offers and petite arrangements.']
+  ['Shop All', '/shop'],
+  ['Best Sellers', '/shop?collection=best-sellers'],
+  ['New Arrivals', '/shop?collection=new-arrivals'],
+  ['Gift Boxes', '/shop?collection=gift-boxes'],
+  ['Subscriptions', '/subscription']
 ];
 
 const occasionPages = [
@@ -187,10 +181,36 @@ const contactMenu = [
   ['About Us', '/about'],
   ['FAQ', '/delivery-areas#faq'],
   ['Gallery', '/gallery'],
-  ['Blog', '/blog'],
-  ['Delivery Information', '/delivery-areas'],
-  ['Privacy Policy', '/privacy-policy'],
-  ['Terms', '/terms']
+  ['Blog', '/blog']
+];
+
+const headerDropdowns = [
+  { key: 'shop', label: 'Shop', baseLabel: 'Shop All', base: '/shop', links: shopMenu.slice(1) },
+  {
+    key: 'occasions',
+    label: 'Occasions',
+    baseLabel: 'All Occasions',
+    base: '/occasions',
+    links: [
+      ['Birthday', '/occasions/birthday'],
+      ['Anniversary', '/occasions/anniversary'],
+      ['Wedding', '/occasions/wedding'],
+      ["Valentine's Day", '/occasions/valentines-day']
+    ]
+  },
+  {
+    key: 'events',
+    label: 'Events',
+    baseLabel: 'All Events',
+    base: '/events-corporate',
+    links: [
+      ['Wedding Events', '/events/wedding-events'],
+      ['Corporate Events', '/events/corporate-events'],
+      ['Birthday Parties', '/events/birthday-parties'],
+      ['Baby Showers', '/events/baby-shower']
+    ]
+  },
+  { key: 'contact', label: 'Contact', baseLabel: 'Contact Us', base: '/contact', links: contactMenu.slice(1) }
 ];
 
 const services = [
@@ -208,7 +228,7 @@ const services = [
   ['Seasonal flowers', 'Fresh stems that change with Canadian seasons.', img('photo-1494972308805-463bc619d34e')],
   ['Holiday arrangements', 'Festive centrepieces and gifting for busy celebration weeks.', img('photo-1512909006721-3d6018887383')],
   ['Floral consultations', 'Guided planning for weddings, events, and custom palettes.', img('photo-1525310072745-f49212b5ac6d')],
-  ['Delivery tracking', 'A demo customer flow that makes delivery feel reassuring.', img('photo-1520763185298-1b434c919102')],
+  ['Delivery tracking', 'A reassuring customer flow for delivery timing, recipient details, and order follow-up.', img('photo-1520763185298-1b434c919102')],
   ['Personalized gift messages', 'Warm messages and add-ons built into the gifting journey.', img('photo-1518895949257-7621c3c786d7')]
 ].map(([title, description, image]) => ({ title, description, image }));
 
@@ -363,33 +383,30 @@ function Header() {
   const [desktopOpen, setDesktopOpen] = useState('');
   const [mobileOpen, setMobileOpen] = useState('');
   const { items } = useCart();
-  const dropdowns = [
-    { key: 'shop', label: 'Shop', base: '/shop', links: shopMenu.slice(1).map(([label, href]) => [href, label]) },
-    { key: 'occasions', label: 'Occasions', base: '/occasions', links: occasionPages.map((item) => [`/occasions/${item.slug}`, item.title]) },
-    { key: 'events', label: 'Events', base: '/events-corporate', links: eventPages.map((item) => [`/events/${item.slug}`, item.title]) },
-    { key: 'contact', label: 'Contact', base: '/contact', links: contactMenu.slice(1) }
-  ];
+  const headerRef = React.useRef(null);
+  React.useEffect(() => {
+    const onPointerDown = (event) => {
+      if (!headerRef.current?.contains(event.target)) setDesktopOpen('');
+    };
+    document.addEventListener('pointerdown', onPointerDown, true);
+    return () => document.removeEventListener('pointerdown', onPointerDown, true);
+  }, []);
   const closeDesktop = () => setDesktopOpen('');
   const closeMobile = () => setOpen(false);
   return (
-    <header className="site-header">
+    <header className="site-header" ref={headerRef}>
       <Link className="brand" to="/" aria-label="Bloom by Maryam home"><LogoMark /><strong>{brand.name}</strong></Link>
       <nav className="desktop-nav" aria-label="Primary navigation">
         <NavLink to="/">Home</NavLink>
-        {dropdowns.map((group) => (
-          <div className="nav-dropdown" key={group.key} onMouseEnter={() => setDesktopOpen(group.key)} onMouseLeave={closeDesktop}>
+        {headerDropdowns.map((group) => (
+          <div className="nav-dropdown" key={group.key}>
             <button type="button" onClick={() => setDesktopOpen(desktopOpen === group.key ? '' : group.key)} aria-expanded={desktopOpen === group.key} aria-haspopup="true">{group.label} <ChevronDown size={15} /></button>
             <AnimatePresence>
               {desktopOpen === group.key && (
-                <motion.div className="mega-menu" initial={{ opacity: 0, y: 10, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 10, scale: 0.98 }} transition={{ duration: 0.18 }}>
-                  <div className="mega-intro">
-                    <span>{group.label}</span>
-                    <strong>{group.key === 'shop' ? 'Boutique flower collections' : group.key === 'occasions' ? 'Flowers for every moment' : group.key === 'events' ? 'Event floral styling' : 'Helpful boutique pages'}</strong>
-                    <p>{group.key === 'shop' ? 'Browse curated blooms, gifts, plants, and recurring flower plans.' : group.key === 'occasions' ? 'Each occasion opens to a dedicated floral landing page.' : group.key === 'events' ? 'Explore celebration, corporate, hospitality, and private event florals.' : 'Find delivery, story, gallery, policies, and direct contact paths.'}</p>
-                  </div>
+                <motion.div className="mega-menu" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }} transition={{ duration: 0.16 }}>
                   <div className="mega-links">
-                    <NavLink to={group.base} onClick={closeDesktop}>{group.key === 'events' ? 'All Events' : group.key === 'contact' ? 'Contact Us' : group.key === 'shop' ? 'Shop All Flowers' : 'All Occasions'}</NavLink>
-                    {group.links.map(([href, label]) => <NavLink key={`${group.key}-${href}-${label}`} to={href} onClick={closeDesktop}>{label}</NavLink>)}
+                    <NavLink to={group.base} onClick={closeDesktop}>{group.baseLabel}</NavLink>
+                    {group.links.map(([label, href]) => <NavLink key={`${group.key}-${href}-${label}`} to={href} onClick={closeDesktop}>{label}</NavLink>)}
                   </div>
                 </motion.div>
               )}
@@ -406,14 +423,14 @@ function Header() {
         {open && (
           <motion.nav className="mobile-nav" initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}>
             <NavLink to="/" onClick={closeMobile}>Home</NavLink>
-            {dropdowns.map((group) => (
+            {headerDropdowns.map((group) => (
               <div className="mobile-accordion" key={group.key}>
                 <button type="button" onClick={() => setMobileOpen(mobileOpen === group.key ? '' : group.key)} aria-expanded={mobileOpen === group.key}>{group.label}<ChevronDown size={16} /></button>
                 <AnimatePresence>
                   {mobileOpen === group.key && (
                     <motion.div className="mobile-submenu" initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}>
-                      <NavLink to={group.base} onClick={closeMobile}>{group.key === 'events' ? 'All Events' : group.key === 'contact' ? 'Contact Us' : group.key === 'shop' ? 'Shop All Flowers' : 'All Occasions'}</NavLink>
-                      {group.links.map(([href, label]) => <NavLink key={`${group.key}-mobile-${href}-${label}`} to={href} onClick={closeMobile}>{label}</NavLink>)}
+                      <NavLink to={group.base} onClick={closeMobile}>{group.baseLabel}</NavLink>
+                      {group.links.map(([label, href]) => <NavLink key={`${group.key}-mobile-${href}-${label}`} to={href} onClick={closeMobile}>{label}</NavLink>)}
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -500,7 +517,7 @@ function ProductCard({ product }) {
 function Home() {
   return (
     <>
-      <Seo title="Fresh Blooms, Beautifully Delivered" description="Premium girl-owned Canadian flower boutique demo for bouquets, wedding flowers, gifts, subscriptions, and GTA flower delivery." />
+      <Seo title="Fresh Blooms, Beautifully Delivered" description="Premium girl-owned Canadian flower boutique for bouquets, wedding flowers, gifts, subscriptions, and GTA flower delivery." />
       <section className="hero">
         <PetalAnimation />
         <div className="hero-copy">
@@ -510,7 +527,7 @@ function Home() {
           <div className="button-row"><Link className="primary btn-large" to="/shop">Shop Flowers</Link><a className="whatsapp-action btn-large" href={whatsappHref(productWhatsappMessage({ name: 'Custom bouquet' }))}>Order by WhatsApp</a><Link className="secondary btn-large" to="/occasions/wedding">Book Wedding Consultation</Link></div>
           <div className="same-day"><Truck size={18} /> Same-day GTA delivery before {business.sameDayCutoff}. No account needed.</div>
         </div>
-        <div className="hero-visual"><ImageFrame src={img('photo-1525310072745-f49212b5ac6d')} alt="Luxury blush floral bouquet on a boutique studio table" className="hero-photo" /><div className="floating-stat"><Sparkles /> 16 demo bouquets ready to shop</div><div className="floating-stat second"><MapPin /> Toronto and GTA delivery</div></div>
+        <div className="hero-visual"><ImageFrame src={img('photo-1525310072745-f49212b5ac6d')} alt="Luxury blush floral bouquet on a boutique studio table" className="hero-photo" /><div className="floating-stat"><Sparkles /> 16 curated bouquets ready to shop</div><div className="floating-stat second"><MapPin /> Toronto and GTA delivery</div></div>
       </section>
       <section><SectionHeading eyebrow="Best sellers" title="Bouquets customers love first" text="Customer-ready bouquets with ratings, colour tags, thoughtful add-ons, and same-day delivery badges." /><div className="product-grid">{products.slice(0, 4).map((product) => <ProductCard key={product.id} product={product} />)}</div></section>
       <section className="soft-band"><SectionHeading eyebrow="Occasions" title="Shop by the moment" /><div className="occasion-grid">{occasionDetails.slice(0, 8).map((item) => <OccasionCard key={item.title} item={item} />)}</div></section>
@@ -541,7 +558,7 @@ function Shop() {
   ).sort((a, b) => sort === 'price-low' ? a.price - b.price : sort === 'price-high' ? b.price - a.price : sort === 'newest' ? Number(b.newest) - Number(a.newest) : Number(b.popular) - Number(a.popular));
   return (
     <PageShell title="Shop Flowers" eyebrow="Online flower delivery" text="Search, filter, and shop bouquets with elegant controls built for quick mobile gifting.">
-      <Seo title="Shop Flowers" description="Shop demo bouquets, roses, orchids, tulips, wedding flowers, preserved roses, and gift boxes with GTA same-day delivery." />
+      <Seo title="Shop Flowers" description="Shop bouquets, roses, orchids, tulips, wedding flowers, preserved roses, and gift boxes with GTA same-day delivery." />
       <div className="filters">
         <label><Search size={16} /> <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search bouquets" /></label>
         <Select label="Occasion" value={occasion} onChange={setOccasion} options={['All', ...new Set(products.map((p) => p.occasion))]} />
@@ -579,7 +596,7 @@ function ProductDetails() {
           <div className="addon-grid">{addOns.map((item) => <label key={item}><input type="checkbox" checked={selectedAddOns.includes(item)} onChange={(e) => setSelectedAddOns(e.target.checked ? [...selectedAddOns, item] : selectedAddOns.filter((a) => a !== item))} /> {item}</label>)}</div>
           <div className="quantity"><button onClick={() => setQty(Math.max(1, qty - 1))} type="button">-</button><span>{qty}</span><button onClick={() => setQty(qty + 1)} type="button">+</button></div>
           <div className="detail-actions"><button className="primary full" type="button" onClick={() => Array.from({ length: qty }).forEach(() => add({ ...product, price }, { size, selectedAddOns }))}>Add to Cart</button><Link className="secondary full" to="/cart">Order Inquiry</Link><a className="whatsapp-action full" href={whatsappHref(productWhatsappMessage(product, qty))}>Order on WhatsApp</a></div>
-          <div className="info-list"><p><Leaf /> Care instructions included with every bouquet.</p><p><PackageCheck /> Freshness guarantee on all demo arrangements.</p><p><Truck /> Same-day delivery before 12 PM where available.</p></div>
+          <div className="info-list"><p><Leaf /> Care instructions included with every bouquet.</p><p><PackageCheck /> Freshness guidance included with every arrangement.</p><p><Truck /> Same-day delivery before 12 PM where available.</p></div>
         </div>
       </div>
       <Reviews />
@@ -609,7 +626,7 @@ function OccasionLanding() {
 
 function Wedding() {
   return (
-    <PageShell title="Wedding Flowers" eyebrow="Romantic floral studio" text="A full demo wedding inquiry experience for bridal bouquets, ceremony flowers, reception centrepieces, and installations.">
+    <PageShell title="Wedding Flowers" eyebrow="Romantic floral studio" text="A graceful wedding inquiry experience for bridal bouquets, ceremony flowers, reception centrepieces, and installations.">
       <Seo title="Wedding Flowers" description="Wedding flower page with bridal bouquets, ceremony arches, reception centrepieces, installations, packages, gallery, and consultation form." />
       <div className="service-grid wedding-services">{weddingServices.map((item) => <ServiceCard key={item.title} {...item} />)}</div>
       <div className="pricing-grid">{[
@@ -648,27 +665,28 @@ function EventLanding() {
 }
 
 function Subscription() {
-  return <PageShell title="Flower Subscription" eyebrow="Fresh flowers on repeat" text="Recurring bouquet plans for homes, offices, gifting, and hospitality spaces. No account required to request a subscription."><Seo title="Flower Subscription" description="Weekly, bi-weekly, and monthly flower subscription demo plans with pause anytime, gift options, and local delivery." /><PlanGrid /><div className="cta-panel"><h2>Request a subscription</h2><p>Choose a cadence and send an inquiry by email or WhatsApp. This demo is ready for EmailJS or Formspree if live sending is added later.</p><Link className="primary" to="/cart">Start Subscription Inquiry</Link></div></PageShell>;
+  return <PageShell title="Flower Subscription" eyebrow="Fresh flowers on repeat" text="Recurring bouquet plans for homes, offices, gifting, and hospitality spaces. No account required to request a subscription."><Seo title="Flower Subscription" description="Weekly, bi-weekly, and monthly flower subscription plans with pause anytime, gift options, and local delivery." /><PlanGrid /><div className="cta-panel"><h2>Request a subscription</h2><p>Choose a cadence and send an inquiry by email or WhatsApp. A production form handler can be connected later without redesigning the experience.</p><Link className="primary" to="/cart">Start Subscription Inquiry</Link></div></PageShell>;
 }
 
 function Delivery() {
   const [postal, setPostal] = useState('');
   return (
-    <PageShell title="Delivery Areas" eyebrow="GTA same-day delivery" text="Demo local delivery page with postal checker, delivery fees, cutoff timing, and service FAQs.">
+    <PageShell title="Delivery Areas" eyebrow="GTA same-day delivery" text="Local delivery guidance with a postal checker, delivery fees, cutoff timing, and service FAQs.">
       <Seo title="Delivery Areas" description="Same-day flower delivery for Toronto, Brampton, Mississauga, Vaughan, Markham, Richmond Hill, North York, Etobicoke, and Scarborough." />
-      <div className="delivery-layout"><ImageFrame src={img('photo-1561181286-d3fee7d55364')} alt="Wrapped flowers ready for delivery across the GTA" /><div className="checker"><h2>Postal code checker</h2><label>Enter postal code<input value={postal} onChange={(e) => setPostal(e.target.value)} placeholder="M5V 2T6" /></label><p>{postal ? 'Great news: this demo postal code is inside the sample GTA delivery zone.' : `Same-day delivery cutoff is ${business.sameDayCutoff}.`}</p><a className="whatsapp-action" href={whatsappHref(`Hi ${business.businessName}, can you deliver flowers to my postal code?\nPostal Code:\nDelivery Date:\nMy Name:\nMy Phone:`)}>Ask on WhatsApp</a></div></div>
+      <div className="delivery-layout"><ImageFrame src={img('photo-1561181286-d3fee7d55364')} alt="Wrapped flowers ready for delivery across the GTA" /><div className="checker"><h2>Postal code checker</h2><label>Enter postal code<input value={postal} onChange={(e) => setPostal(e.target.value)} placeholder="M5V 2T6" /></label><p>{postal ? 'Great news: this postal code is inside the sample GTA delivery zone.' : `Same-day delivery cutoff is ${business.sameDayCutoff}.`}</p><a className="whatsapp-action" href={whatsappHref(`Hi ${business.businessName}, can you deliver flowers to my postal code?\nPostal Code:\nDelivery Date:\nMy Name:\nMy Phone:`)}>Ask on WhatsApp</a></div></div>
       <div className="pricing-grid">{['Toronto core $14', 'GTA nearby $18', 'Extended GTA $24'].map((fee) => <div className="pricing-card" key={fee}><Truck /><h3>{fee}</h3><p>Clear delivery fee guidance helps customers choose the right flower delivery option.</p></div>)}</div><AreaChips /><FAQ />
     </PageShell>
   );
 }
 
 function About() {
-  return <PageShell title="About Maryam" eyebrow="Founder story" text="Maryam is a Canadian floral designer who started Bloom by Maryam with a love for soft colours, meaningful gifts, and beautifully styled arrangements. Her goal is to make every bouquet feel personal, elegant, fresh, and unforgettable."><Seo title="About" description="Founder story for Maryam, a girl-owned Canadian floral boutique focused on freshness, sustainability, local sourcing, and personal service." /><div className="split"><Reveal><h2>Girl-owned, Canadian, and detail obsessed.</h2><p>Bloom by Maryam blends premium floral design with warm service, sustainable choices, local sourcing, and a behind-the-studio feel customers can trust.</p><p>Every section is shaped around a real boutique experience: studio story, values, freshness promise, local sourcing, and a calm path toward orders or consultations.</p></Reveal><Reveal className="feature-panel"><ImageFrame src={img('photo-1487070183336-b863922373d4')} alt="Founder-style floral studio table with flowers and tools" /></Reveal></div><div className="service-grid">{[
-    ['Elegance', 'Soft palettes, considered spacing, and arrangements that feel special without feeling loud.', img('photo-1525310072745-f49212b5ac6d')],
-    ['Care', 'Thoughtful gift notes, careful delivery language, and customer-first service moments.', img('photo-1501004318641-b39e6451bec6')],
-    ['Freshness', 'Seasonal flowers, care guidance, and freshness promises made visible throughout the site.', img('photo-1490750967868-88aa4486c946')],
-    ['Personal touch', 'Custom bouquet and wedding consultation paths that make every order feel intentional.', img('photo-1519378058457-4c29a0a2efac')],
-    ['Reliability', 'Clear cutoff times, delivery areas, and polished order experiences for busy buyers.', img('photo-1561181286-d3fee7d55364')]
+  return <PageShell title="About Maryam" eyebrow="Founder story" text="Bloom by Maryam is a girl-owned Canadian flower boutique shaped around graceful design, thoughtful gifting, and reliable GTA delivery."><Seo title="About" description="Professional brand story for Bloom by Maryam, a girl-owned Canadian floral boutique focused on elegant design, sustainability, GTA delivery, and personal service." /><div className="split"><Reveal><h2>Flowers with softness, intention, and a personal touch.</h2><p>Maryam started Bloom by Maryam to make premium florals feel warm and approachable. Every bouquet is designed to feel chosen with care, from a soft birthday wrap to a full wedding floral story.</p><p>The boutique philosophy is simple: use beautiful seasonal flowers, keep the palette refined, package every detail thoughtfully, and make ordering feel calm for busy gift-givers across Toronto and the GTA.</p><div className="button-row"><Link className="primary" to="/shop">Shop Flowers</Link><a className="whatsapp-action" href={whatsappHref(productWhatsappMessage({ name: 'Custom bouquet' }))}>Ask Maryam on WhatsApp</a></div></Reveal><Reveal className="feature-panel"><ImageFrame src={img('photo-1487070183336-b863922373d4')} alt="Founder-style floral studio table with flowers and tools" /></Reveal></div><div className="service-grid">{[
+    ['Brand story', 'A modern Canadian floral studio built around meaningful gifts, romantic textures, and boutique service.', img('photo-1525310072745-f49212b5ac6d')],
+    ['Mission', 'To help customers send flowers that feel personal, polished, fresh, and easy to order.', img('photo-1501004318641-b39e6451bec6')],
+    ['Floral philosophy', 'Soft movement, balanced colour, premium stems, and arrangements that feel elegant without feeling overly formal.', img('photo-1490750967868-88aa4486c946')],
+    ['GTA delivery', 'Clear delivery areas, same-day cutoff guidance, and practical order details for Toronto and nearby cities.', img('photo-1561181286-d3fee7d55364')],
+    ['Sustainability', 'Seasonal choices, careful stem planning, and thoughtful packaging keep waste lower wherever possible.', img('photo-1519378058457-4c29a0a2efac')],
+    ['Why choose us', 'A warm owner-led experience with custom bouquet support, wedding inquiries, and WhatsApp ordering.', img('photo-1520763185298-1b434c919102')]
   ].map(([title, description, image]) => <ServiceCard key={title} title={title} description={description} image={image} />)}</div></PageShell>;
 }
 
@@ -677,12 +695,12 @@ function Gallery() {
 }
 
 function Blog() {
-  return <PageShell title="Floral Journal" eyebrow="Helpful flower content" text="SEO-ready demo articles built for flower care, gifting, wedding planning, and local delivery searches."><Seo title="Blog" description="Flower care, birthday flowers, wedding trends, same-day delivery, flower meanings, and Mother's Day gift ideas." /><div className="blog-grid">{blogPosts.map((post) => <article className="blog-card" key={post.title}><ImageFrame src={post.image} alt={`${post.title} flower lifestyle article`} /><div className="blog-meta"><span>{post.category}</span><small>{post.readTime} · By {post.author}</small></div><h3>{post.title}</h3><p>{post.excerpt}</p><Link className="secondary" to="/contact">Read Article</Link></article>)}</div></PageShell>;
+  return <PageShell title="Floral Journal" eyebrow="Helpful flower content" text="Flower care, gifting, wedding planning, and local delivery articles for thoughtful shoppers."><Seo title="Blog" description="Flower care, birthday flowers, wedding trends, same-day delivery, flower meanings, and Mother's Day gift ideas." /><div className="blog-grid">{blogPosts.map((post) => <article className="blog-card" key={post.title}><ImageFrame src={post.image} alt={`${post.title} flower lifestyle article`} /><div className="blog-meta"><span>{post.category}</span><small>{post.readTime} · By {post.author}</small></div><h3>{post.title}</h3><p>{post.excerpt}</p><Link className="secondary" to="/contact">Read Article</Link></article>)}</div></PageShell>;
 }
 
 function Contact() {
   return (
-    <PageShell title="Contact Bloom by Maryam" eyebrow="We would love to help" text="Demo contact paths for orders, weddings, events, subscriptions, and delivery questions.">
+    <PageShell title="Contact Bloom by Maryam" eyebrow="We would love to help" text="Contact paths for orders, weddings, events, subscriptions, and delivery questions.">
       <Seo title="Contact" description="Contact Bloom by Maryam flower boutique by form, phone, email, WhatsApp, business hours, Instagram, and location section." />
       <div className="contact-layout"><DemoForm title="Send a message" fields={['Full name', 'Email', 'Phone', 'Message']} /><div className="contact-card"><ImageFrame src={img('photo-1519378058457-4c29a0a2efac')} alt="Bloom by Maryam studio flowers prepared for customer pickup" /><p><Phone /> {brand.phone}</p><p><Mail /> {brand.email}</p><p><Clock /> Mon-Sat 9 AM - 6 PM</p><p><MapPin /> Toronto GTA studio location</p><div className="map-placeholder">Toronto GTA floral delivery area</div><div className="button-row"><Link className="primary" to="/order-inquiry">Email Order</Link><a className="whatsapp-action" href={whatsappHref(productWhatsappMessage({ name: 'Custom bouquet' }))}>WhatsApp Order</a></div></div></div>
     </PageShell>
@@ -845,7 +863,20 @@ function DemoForm({ title, fields, button = 'Submit', onSuccess }) {
 }
 
 function FAQ() {
-  return <div className="faq" id="faq">{['What is the same-day cutoff?', 'Can I send a gift message?', 'Do you deliver outside Toronto?', 'Are wedding consultations available?'].map((q, i) => <details key={q}><summary>{q}</summary><p>{i === 0 ? `Same-day cutoff is ${business.sameDayCutoff}.` : 'Yes. Bloom by Maryam supports the workflow customers expect from a premium florist.'}</p></details>)}</div>;
+  const faqs = [
+    ['How do I place an order?', 'Browse the shop, add flowers to your cart, then send the prepared order inquiry by email or WhatsApp. Maryam can confirm availability, delivery timing, and final details.'],
+    ['Can I order through WhatsApp?', 'Yes. Use any WhatsApp button to send the bouquet name, delivery date, area, gift message, and your contact details.'],
+    ['Where do you deliver?', `Bloom by Maryam supports Toronto and GTA areas including ${brand.areas.slice(1, 5).join(', ')}. Delivery availability is confirmed before the order is finalized.`],
+    ['What is the same-day cutoff?', `Same-day requests should be sent before ${business.sameDayCutoff}. Seasonal rush periods may need more notice.`],
+    ['Can I include a gift message?', 'Yes. Add a gift message in the order inquiry form or include it in your WhatsApp message.'],
+    ['Do you design wedding flowers?', 'Yes. Wedding inquiries can include bridal bouquets, ceremony flowers, reception centrepieces, and floral installations.'],
+    ['Can you handle event flowers?', 'Yes. Event options include corporate flowers, birthdays, baby showers, private dinners, hospitality styling, and custom installations.'],
+    ['Can I request a custom bouquet?', 'Yes. Share the occasion, budget, colours, delivery city, and any flower preferences for a custom recommendation.'],
+    ['How do I care for fresh flowers?', 'Trim stems, refresh the water every two days, keep flowers away from heat and direct sun, and remove tired stems as needed.'],
+    ['Are subscriptions available?', 'Yes. Weekly, bi-weekly, and monthly flower plans are available as inquiry flows for homes, studios, and offices.'],
+    ['How do I contact the boutique?', `Use the contact form, email ${brand.email}, or send a WhatsApp inquiry for the quickest order conversation.`]
+  ];
+  return <div className="faq" id="faq">{faqs.map(([q, answer]) => <details key={q}><summary>{q}</summary><p>{answer}</p></details>)}</div>;
 }
 
 function Reviews() {
