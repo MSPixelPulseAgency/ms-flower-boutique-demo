@@ -1,8 +1,9 @@
 import React, { createContext, useContext, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BrowserRouter, Link, NavLink, Route, Routes, useParams } from 'react-router-dom';
+import { BrowserRouter, Link, NavLink, Route, Routes, useLocation, useParams } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
+  ArrowRight,
   BadgeDollarSign,
   CalendarDays,
   ChevronDown,
@@ -17,11 +18,11 @@ import {
   Mail,
   MapPin,
   Menu,
-  MessageCircle,
   PackageCheck,
   Phone,
   Plus,
   Search,
+  Send,
   ShoppingBag,
   Sparkles,
   Star,
@@ -44,6 +45,7 @@ const brand = {
 };
 
 const img = (id, fit = 'crop') => `https://images.unsplash.com/${id}?auto=format&fit=${fit}&w=1200&q=82`;
+const heroBouquetImage = '/hero-bouquet.svg';
 
 const productImages = [
   img('photo-1561181286-d3fee7d55364'),
@@ -375,7 +377,43 @@ function Seo({ title, description }) {
 }
 
 function LogoMark() {
-  return <span className="logo-mark" aria-hidden="true"><i /><i /><i /><i /><b /></span>;
+  return <span className="logo-mark" aria-hidden="true"><img src="/favicon.svg" alt="" /></span>;
+}
+
+function WhatsAppIcon({ size = 18 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 32 32" aria-hidden="true" focusable="false" className="whatsapp-icon">
+      <path fill="currentColor" d="M16.02 3.2A12.7 12.7 0 0 0 5.1 22.38L3.2 29l6.82-1.8a12.65 12.65 0 0 0 6 1.52h.01A12.76 12.76 0 0 0 28.8 15.97 12.75 12.75 0 0 0 16.02 3.2Zm0 23.36h-.01a10.48 10.48 0 0 1-5.35-1.46l-.38-.23-4.04 1.06 1.08-3.94-.25-.4a10.52 10.52 0 1 1 8.95 4.97Zm5.78-7.88c-.32-.16-1.87-.92-2.16-1.03-.29-.1-.5-.16-.71.16-.21.32-.81 1.03-1 1.24-.18.21-.37.24-.68.08-.32-.16-1.34-.49-2.55-1.58-.94-.84-1.58-1.88-1.76-2.2-.18-.32-.02-.49.14-.65.14-.14.32-.37.47-.55.16-.18.21-.32.32-.53.1-.21.05-.39-.03-.55-.08-.16-.71-1.71-.97-2.34-.26-.62-.52-.53-.71-.54h-.61c-.21 0-.55.08-.84.39-.29.32-1.11 1.08-1.11 2.63 0 1.55 1.13 3.05 1.29 3.26.16.21 2.23 3.4 5.4 4.77.76.33 1.35.52 1.81.67.76.24 1.45.21 2 .13.61-.09 1.87-.76 2.13-1.5.26-.74.26-1.37.18-1.5-.08-.13-.29-.21-.61-.37Z" />
+    </svg>
+  );
+}
+
+function SocialIcon({ type }) {
+  const common = { width: 18, height: 18, viewBox: '0 0 24 24', 'aria-hidden': true, focusable: false };
+  if (type === 'facebook') return <svg {...common}><path fill="currentColor" d="M14 8.5V6.7c0-.86.19-1.3 1.4-1.3H17V2.2A23.2 23.2 0 0 0 14.2 2C11.4 2 9.5 3.7 9.5 6.9v1.6H6.4V12h3.1v10H14V12h3l.5-3.5H14Z" /></svg>;
+  if (type === 'pinterest') return <svg {...common}><path fill="currentColor" d="M12.1 2C6.6 2 3 5.8 3 10.1c0 2 .8 3.8 2.5 4.5.28.12.53 0 .61-.31l.25-.99c.08-.31.05-.42-.18-.7-.5-.6-.81-1.37-.81-2.47 0-2.9 2.17-5.5 5.65-5.5 3.08 0 4.77 1.88 4.77 4.4 0 3.3-1.46 6.1-3.63 6.1-1.2 0-2.1-.99-1.81-2.2.34-1.45 1-3.02 1-4.07 0-.94-.5-1.72-1.55-1.72-1.23 0-2.22 1.27-2.22 2.98 0 1.09.37 1.82.37 1.82l-1.49 6.3c-.44 1.87-.07 4.16-.04 4.39.02.14.2.17.28.07.12-.16 1.65-2.05 2.17-3.94.15-.54.85-3.32.85-3.32.42.8 1.65 1.51 2.96 1.51 3.9 0 6.54-3.55 6.54-8.3C19.2 5.1 16.16 2 12.1 2Z" /></svg>;
+  if (type === 'tiktok') return <svg {...common}><path fill="currentColor" d="M16.7 2c.37 2.62 1.84 4.18 4.38 4.35v3.02a7.52 7.52 0 0 1-4.32-1.34v6.45c0 4.1-2.5 6.52-6.32 6.52-3.44 0-6.22-2.58-6.22-5.88 0-3.6 2.9-6.1 6.73-5.75v3.16c-1.78-.28-3.43.67-3.43 2.48 0 1.5 1.25 2.6 2.87 2.6 1.8 0 2.95-1.05 2.95-3.27V2h3.39Z" /></svg>;
+  return <Instagram size={18} />;
+}
+
+function ButtonIcon({ type }) {
+  if (type === 'whatsapp') return <WhatsAppIcon />;
+  if (type === 'shop') return <ShoppingBag size={18} />;
+  if (type === 'contact') return <Mail size={18} />;
+  if (type === 'gallery') return <Sparkles size={18} />;
+  if (type === 'cart') return <ShoppingBag size={18} />;
+  if (type === 'send') return <Send size={18} />;
+  if (type === 'calendar') return <CalendarDays size={18} />;
+  if (type === 'learn') return <ArrowRight size={18} />;
+  return <ArrowRight size={18} />;
+}
+
+function ScrollToTop() {
+  const { pathname, search } = useLocation();
+  React.useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, [pathname, search]);
+  return null;
 }
 
 function Header() {
@@ -416,7 +454,7 @@ function Header() {
       </nav>
       <div className="header-actions">
         <Link className="cart-pill" to="/cart" aria-label={`Cart with ${items.length} items`}><ShoppingBag size={18} /><span>{items.length}</span><em>Order</em></Link>
-        <a className="header-whatsapp whatsapp-action" href={whatsappHref(productWhatsappMessage({ name: 'Custom bouquet' }))}><MessageCircle size={17} /> WhatsApp</a>
+        <a className="header-whatsapp whatsapp-action" href={whatsappHref(productWhatsappMessage({ name: 'Custom bouquet' }))}><WhatsAppIcon size={18} /> WhatsApp</a>
         <button className="menu-button" type="button" onClick={() => setOpen(!open)} aria-label="Toggle mobile menu">{open ? <X /> : <Menu />}</button>
       </div>
       <AnimatePresence>
@@ -437,7 +475,7 @@ function Header() {
               </div>
             ))}
             <NavLink to="/cart" onClick={closeMobile}>Order Cart</NavLink>
-            <a className="whatsapp-action" href={whatsappHref(productWhatsappMessage({ name: 'Custom bouquet' }))} onClick={closeMobile}>Order on WhatsApp</a>
+            <a className="whatsapp-action" href={whatsappHref(productWhatsappMessage({ name: 'Custom bouquet' }))} onClick={closeMobile}><WhatsAppIcon /> Order on WhatsApp</a>
           </motion.nav>
         )}
       </AnimatePresence>
@@ -446,16 +484,25 @@ function Header() {
 }
 
 function Footer() {
+  const socialLinks = [
+    ['Instagram', 'instagram', business.socialLinks.instagram],
+    ['Facebook', 'facebook', business.socialLinks.facebook],
+    ['Pinterest', 'pinterest', '#'],
+    ['TikTok', 'tiktok', business.socialLinks.tiktok]
+  ];
   return (
     <footer className="footer">
-      <div className="footer-cta"><span className="eyebrow">Bloom by Maryam concierge</span><h2>Ready to send something beautiful?</h2><p>No account needed. Build a cart, send an email inquiry, or start a WhatsApp order with Maryam’s boutique-style flow.</p><div className="button-row"><Link className="primary btn-large" to="/cart">Start Order Inquiry</Link><a className="whatsapp-action btn-large" href={whatsappHref(productWhatsappMessage({ name: 'Custom bouquet' }))}><MessageCircle size={18} /> Order on WhatsApp</a></div></div>
+      <div className="footer-cta"><span className="eyebrow">Bloom by Maryam concierge</span><h2>Ready to send something beautiful?</h2><p>No account needed. Build a cart, send an email inquiry, or start a WhatsApp order with Maryam’s boutique-style flow.</p><div className="button-row"><Link className="primary btn-large" to="/cart"><ButtonIcon type="cart" /> Start Order Inquiry</Link><a className="whatsapp-action btn-large" href={whatsappHref(productWhatsappMessage({ name: 'Custom bouquet' }))}><WhatsAppIcon /> Order on WhatsApp</a></div></div>
       <div>
         <Link className="brand footer-brand" to="/"><LogoMark /><strong>{brand.name}</strong></Link>
         <p>Premium Canadian flower boutique experience. Elegant bouquets, wedding florals, gifts, subscriptions, and same-day GTA delivery pathways.</p>
+        <div className="social-links" aria-label="Bloom by Maryam social links">
+          {socialLinks.map(([label, type, href]) => <a key={label} href={href} aria-label={label}><SocialIcon type={type} /></a>)}
+        </div>
       </div>
       <div><h3>Shop</h3><Link to="/shop">Shop all flowers</Link><Link to="/occasions/wedding">Wedding flowers</Link><Link to="/subscription">Subscriptions</Link><Link to="/delivery-areas">Delivery areas</Link></div>
       <div><h3>Explore</h3><Link to="/occasions/birthday">Birthday flowers</Link><Link to="/events/corporate-events">Corporate events</Link><Link to="/gallery">Gallery</Link><Link to="/blog">Floral journal</Link></div>
-      <div><h3>Contact</h3><p><Mail size={16} /> {brand.email}</p><p><Phone size={16} /> {brand.phone}</p><p><MessageCircle size={16} /> +1 (437) 973-1724</p><p><Instagram size={16} /> Instagram</p></div>
+      <div><h3>Contact</h3><p><Mail size={16} /> {brand.email}</p><p><Phone size={16} /> {brand.phone}</p><p><WhatsAppIcon size={16} /> +1 (437) 973-1724</p><p><Instagram size={16} /> Instagram</p></div>
     </footer>
   );
 }
@@ -467,7 +514,7 @@ function Layout({ children }) {
       <Header />
       <main>{children}</main>
       <Link className="floating-cart" to="/cart" aria-label="Open cart"><ShoppingBag /><span>{items.length}</span></Link>
-      <a className="floating-whatsapp" href={whatsappHref(productWhatsappMessage({ name: 'Custom bouquet' }))} aria-label="Order on WhatsApp"><MessageCircle /></a>
+      <a className="floating-whatsapp" href={whatsappHref(productWhatsappMessage({ name: 'Custom bouquet' }))} aria-label="Order on WhatsApp"><WhatsAppIcon size={24} /></a>
       <AnimatePresence>{toast && <motion.div className="toast" initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 20, opacity: 0 }}>{toast}</motion.div>}</AnimatePresence>
       <Footer />
     </>
@@ -509,7 +556,7 @@ function ProductCard({ product }) {
       </div>
       <p className="product-copy">{product.description}</p>
       <div className="rating"><Star size={16} fill="currentColor" /> {product.rating} · {product.colour} · {product.flowerType}</div>
-      <div className="product-actions"><strong>${product.price}</strong><Link to={`/shop/${product.id}`}>Quick View</Link><button type="button" onClick={() => add(product)}>Add to Cart</button><a className="whatsapp-action" href={whatsappHref(productWhatsappMessage(product))}>WhatsApp</a></div>
+      <div className="product-actions"><strong>${product.price}</strong><Link to={`/shop/${product.id}`}><ButtonIcon type="learn" /> Quick View</Link><button type="button" onClick={() => add(product)}><ButtonIcon type="cart" /> Add to Cart</button><a className="whatsapp-action" href={whatsappHref(productWhatsappMessage(product))}><WhatsAppIcon /> WhatsApp</a></div>
     </Reveal>
   );
 }
@@ -524,20 +571,19 @@ function Home() {
           <span className="eyebrow">Girl-owned Canadian flower boutique</span>
           <h1>Fresh Blooms, Beautifully Delivered</h1>
           <p>A girl-owned Canadian floral boutique creating elegant bouquets, wedding flowers, and thoughtful gifts for life’s most beautiful moments.</p>
-          <div className="button-row"><Link className="primary btn-large" to="/shop">Shop Flowers</Link><a className="whatsapp-action btn-large" href={whatsappHref(productWhatsappMessage({ name: 'Custom bouquet' }))}>Order by WhatsApp</a><Link className="secondary btn-large" to="/occasions/wedding">Book Wedding Consultation</Link></div>
+          <div className="button-row"><Link className="primary btn-large" to="/shop"><ButtonIcon type="shop" /> Shop Flowers</Link><a className="whatsapp-action btn-large" href={whatsappHref(productWhatsappMessage({ name: 'Custom bouquet' }))}><WhatsAppIcon /> Order by WhatsApp</a><Link className="secondary btn-large" to="/occasions/wedding"><ButtonIcon type="calendar" /> Book Wedding Consultation</Link></div>
           <div className="same-day"><Truck size={18} /> Same-day GTA delivery before {business.sameDayCutoff}. No account needed.</div>
         </div>
-        <div className="hero-visual"><ImageFrame src={img('photo-1525310072745-f49212b5ac6d')} alt="Luxury blush floral bouquet on a boutique studio table" className="hero-photo" /><div className="floating-stat"><Sparkles /> 16 curated bouquets ready to shop</div><div className="floating-stat second"><MapPin /> Toronto and GTA delivery</div></div>
+        <div className="hero-visual"><ImageFrame src={heroBouquetImage} alt="Luxury blush and coral bouquet arranged for Bloom by Maryam" className="hero-photo" /><div className="floating-stat"><Sparkles /> 16 curated bouquets ready to shop</div><div className="floating-stat second"><MapPin /> Toronto and GTA delivery</div></div>
       </section>
       <section><SectionHeading eyebrow="Best sellers" title="Bouquets customers love first" text="Customer-ready bouquets with ratings, colour tags, thoughtful add-ons, and same-day delivery badges." /><div className="product-grid">{products.slice(0, 4).map((product) => <ProductCard key={product.id} product={product} />)}</div></section>
       <section className="soft-band"><SectionHeading eyebrow="Occasions" title="Shop by the moment" /><div className="occasion-grid">{occasionDetails.slice(0, 8).map((item) => <OccasionCard key={item.title} item={item} />)}</div></section>
-      <section className="split"><Reveal><span className="eyebrow">Wedding floral studio</span><h2>Romantic florals for ceremonies, receptions, and intimate celebrations.</h2><p>From silk-wrapped bridal bouquets to candlelit centrepieces, the wedding occasion page feels like a real consultation pathway for high-intent couples.</p><Link className="primary" to="/occasions/wedding">Explore Weddings</Link></Reveal><Reveal className="feature-panel"><ImageFrame src={img('photo-1526047932273-341f2a7631f9')} alt="Romantic wedding bouquet with soft cream flowers" /></Reveal></section>
+      <section className="split"><Reveal><span className="eyebrow">Wedding floral studio</span><h2>Romantic florals for ceremonies, receptions, and intimate celebrations.</h2><p>From silk-wrapped bridal bouquets to candlelit centrepieces, the wedding occasion page feels like a real consultation pathway for high-intent couples.</p><Link className="primary" to="/occasions/wedding"><ButtonIcon type="calendar" /> Explore Weddings</Link></Reveal><Reveal className="feature-panel"><ImageFrame src={img('photo-1526047932273-341f2a7631f9')} alt="Romantic wedding bouquet with soft cream flowers" /></Reveal></section>
       <section><SectionHeading eyebrow="Subscriptions" title="Fresh flowers on a rhythm" text="Weekly, bi-weekly, and monthly plans make recurring revenue easy to present to flower business owners." /><PlanGrid /></section>
       <WhyChoose />
       <section className="soft-band delivery-preview"><SectionHeading eyebrow="Delivery" title="Designed for local GTA flower shoppers" /><div className="split compact"><ImageFrame src={img('photo-1561181286-d3fee7d55364')} alt="Fresh flower delivery bouquet wrapped for local GTA delivery" /><div><h3>Same-day clarity at a glance</h3><p>Delivery pages and banners highlight the 12 PM cutoff, GTA area coverage, fee expectations, and easy contact options so local shoppers can decide quickly.</p><AreaChips /></div></div></section>
       <Testimonials />
       <InstagramGrid />
-      <Newsletter />
     </>
   );
 }
@@ -595,7 +641,7 @@ function ProductDetails() {
           <h3>Add-ons</h3>
           <div className="addon-grid">{addOns.map((item) => <label key={item}><input type="checkbox" checked={selectedAddOns.includes(item)} onChange={(e) => setSelectedAddOns(e.target.checked ? [...selectedAddOns, item] : selectedAddOns.filter((a) => a !== item))} /> {item}</label>)}</div>
           <div className="quantity"><button onClick={() => setQty(Math.max(1, qty - 1))} type="button">-</button><span>{qty}</span><button onClick={() => setQty(qty + 1)} type="button">+</button></div>
-          <div className="detail-actions"><button className="primary full" type="button" onClick={() => Array.from({ length: qty }).forEach(() => add({ ...product, price }, { size, selectedAddOns }))}>Add to Cart</button><Link className="secondary full" to="/cart">Order Inquiry</Link><a className="whatsapp-action full" href={whatsappHref(productWhatsappMessage(product, qty))}>Order on WhatsApp</a></div>
+          <div className="detail-actions"><button className="primary full" type="button" onClick={() => Array.from({ length: qty }).forEach(() => add({ ...product, price }, { size, selectedAddOns }))}><ButtonIcon type="cart" /> Add to Cart</button><Link className="secondary full" to="/cart"><ButtonIcon type="send" /> Order Inquiry</Link><a className="whatsapp-action full" href={whatsappHref(productWhatsappMessage(product, qty))}><WhatsAppIcon /> Order on WhatsApp</a></div>
           <div className="info-list"><p><Leaf /> Care instructions included with every bouquet.</p><p><PackageCheck /> Freshness guidance included with every arrangement.</p><p><Truck /> Same-day delivery before 12 PM where available.</p></div>
         </div>
       </div>
@@ -616,10 +662,10 @@ function OccasionLanding() {
   return (
     <PageShell title={occasion.headline} eyebrow={`${occasion.title} flowers`} text={occasion.description} image={occasion.image} ctaLabel={occasion.cta} ctaTo="/order-inquiry" secondaryLabel="Order on WhatsApp" secondaryHref={whatsappHref(`Hi ${business.businessName}, I would like help with ${occasion.title} flowers.\nDelivery Date:\nDelivery Area:\nBudget:\nMy Name:\nMy Phone:`)}>
       <Seo title={`${occasion.title} Flowers`} description={`${occasion.description} Same-day floral inquiry options for ${occasion.title.toLowerCase()} flowers in Toronto and the GTA.`} />
-      <div className="landing-banner"><ImageFrame src={occasion.image} alt={`${occasion.title} premium floral banner`} /><div><span className="eyebrow">Curated collection</span><h2>{occasion.banner}</h2><p>Choose a prepared arrangement or request a custom palette. Every order path includes gift message support, delivery timing, and WhatsApp follow-up.</p><div className="button-row"><Link className="primary" to="/shop">Browse Flowers</Link><a className="whatsapp-action" href={whatsappHref(`Hi ${business.businessName}, I need ${occasion.title} flowers.\nPreferred Colours:\nDelivery Area:\nMy Name:\nMy Phone:`)}>WhatsApp {occasion.title}</a></div></div></div>
+      <div className="landing-banner"><ImageFrame src={occasion.image} alt={`${occasion.title} premium floral banner`} /><div><span className="eyebrow">Curated collection</span><h2>{occasion.banner}</h2><p>Choose a prepared arrangement or request a custom palette. Every order path includes gift message support, delivery timing, and WhatsApp follow-up.</p><div className="button-row"><Link className="primary" to="/shop"><ButtonIcon type="shop" /> Browse Flowers</Link><a className="whatsapp-action" href={whatsappHref(`Hi ${business.businessName}, I need ${occasion.title} flowers.\nPreferred Colours:\nDelivery Area:\nMy Name:\nMy Phone:`)}><WhatsAppIcon /> WhatsApp {occasion.title}</a></div></div></div>
       <SectionHeading eyebrow="Recommended flowers" title={`${occasion.title} collection`} text="A polished selection of bouquets and gifts that fit this occasion." />
       <div className="product-grid">{picks.map((product) => <ProductCard key={`${occasion.slug}-${product.id}`} product={product} />)}</div>
-      <div className="cta-panel"><h2>Need something custom?</h2><p>Share the occasion, delivery city, preferred palette, and budget. Maryam can shape a personal floral recommendation through email or WhatsApp.</p><div className="button-row"><Link className="primary" to="/order-inquiry">Send Order Inquiry</Link><a className="whatsapp-action" href={whatsappHref(`Hi ${business.businessName}, I would like a custom ${occasion.title} flower order.\nOccasion:\nDelivery Date:\nDelivery Area:\nBudget:\nMy Name:\nMy Phone:`)}>Order on WhatsApp</a></div></div>
+      <div className="cta-panel"><h2>Need something custom?</h2><p>Share the occasion, delivery city, preferred palette, and budget. Maryam can shape a personal floral recommendation through email or WhatsApp.</p><div className="button-row"><Link className="primary" to="/order-inquiry"><ButtonIcon type="send" /> Send Order Inquiry</Link><a className="whatsapp-action" href={whatsappHref(`Hi ${business.businessName}, I would like a custom ${occasion.title} flower order.\nOccasion:\nDelivery Date:\nDelivery Area:\nBudget:\nMy Name:\nMy Phone:`)}><WhatsAppIcon /> Order on WhatsApp</a></div></div>
     </PageShell>
   );
 }
@@ -633,14 +679,14 @@ function Wedding() {
         ['Petite Ceremony', 1200, 'For city hall, intimate restaurants, and small ceremonies.', ['Bridal bouquet', 'Boutonniere set', 'Pickup or local delivery'], img('photo-1519741497674-611481863552')],
         ['Signature Wedding', 2800, 'A balanced ceremony and reception floral plan for modern GTA weddings.', ['Personal flowers', 'Ceremony focal blooms', 'Reception centrepieces'], img('photo-1469371670807-013ccf25f16a')],
         ['Luxe Floral Weekend', 5200, 'High-touch floral styling for full wedding weekends and statement installations.', ['Design consultation', 'Installations', 'Setup and strike support'], img('photo-1519167758481-83f550bb49b3')]
-      ].map(([plan, price, copy, features, image], i) => <div className={`pricing-card wedding-package ${i === 1 ? 'featured' : ''}`} key={plan}><ImageFrame src={image} alt={`${plan} wedding floral package`} /><h3>{plan}</h3>{i === 1 && <span className="recommended">Recommended</span>}<strong>${price}+</strong><p>{copy}</p><ul>{features.map((f) => <li key={f}>{f}</li>)}</ul><Link className={i === 1 ? 'primary' : 'secondary'} to="/contact">Email Inquiry</Link><a className="whatsapp-action" href={whatsappHref(`Hi ${business.businessName}, I would like to ask about ${plan} wedding flowers.\nWedding Date:\nVenue:\nCity:\nGuest Count:\nMy Name:\nMy Phone:`)}>WhatsApp Wedding Inquiry</a></div>)}</div>
+      ].map(([plan, price, copy, features, image], i) => <div className={`pricing-card wedding-package ${i === 1 ? 'featured' : ''}`} key={plan}><ImageFrame src={image} alt={`${plan} wedding floral package`} /><h3>{plan}</h3>{i === 1 && <span className="recommended">Recommended</span>}<strong>${price}+</strong><p>{copy}</p><ul>{features.map((f) => <li key={f}>{f}</li>)}</ul><Link className={i === 1 ? 'primary' : 'secondary'} to="/contact"><ButtonIcon type="contact" /> Email Inquiry</Link><a className="whatsapp-action" href={whatsappHref(`Hi ${business.businessName}, I would like to ask about ${plan} wedding flowers.\nWedding Date:\nVenue:\nCity:\nGuest Count:\nMy Name:\nMy Phone:`)}><WhatsAppIcon /> WhatsApp Wedding Inquiry</a></div>)}</div>
       <ConsultationForm />
     </PageShell>
   );
 }
 
 function Events() {
-  return <PageShell title="Events & Corporate Flowers" eyebrow="Polished recurring florals" text="Corporate, hospitality, celebration, and sympathy floral services presented for lead generation." image={img('photo-1519167758481-83f550bb49b3')} ctaLabel="Plan Event Flowers" ctaTo="/events/corporate-events" secondaryLabel="WhatsApp Event Inquiry" secondaryHref={whatsappHref(`Hi ${business.businessName}, I need event flowers.\nEvent Type:\nDate:\nCity:\nGuest Count:\nMy Name:\nMy Phone:`)}><Seo title="Events and Corporate Flowers" description="Corporate weekly flowers, office reception flowers, restaurant arrangements, hotel lobby flowers, baby showers, birthdays, engagements, funeral services, and installations." /><div className="service-grid">{eventPages.map((item) => <EventCard key={item.slug} item={item} />)}</div><div className="cta-panel"><h2>Planning an event?</h2><p>Send a quick inquiry with your date, city, guest count, and floral style. Maryam can respond with a polished quote pathway.</p><a className="whatsapp-action" href={whatsappHref(`Hi ${business.businessName}, I need event flowers.\nEvent Type:\nDate:\nCity:\nGuest Count:\nMy Name:\nMy Phone:`)}>WhatsApp Event Inquiry</a></div></PageShell>;
+  return <PageShell title="Events & Corporate Flowers" eyebrow="Polished recurring florals" text="Corporate, hospitality, celebration, and sympathy floral services presented for lead generation." image={img('photo-1519167758481-83f550bb49b3')} ctaLabel="Plan Event Flowers" ctaTo="/events/corporate-events" secondaryLabel="WhatsApp Event Inquiry" secondaryHref={whatsappHref(`Hi ${business.businessName}, I need event flowers.\nEvent Type:\nDate:\nCity:\nGuest Count:\nMy Name:\nMy Phone:`)}><Seo title="Events and Corporate Flowers" description="Corporate weekly flowers, office reception flowers, restaurant arrangements, hotel lobby flowers, baby showers, birthdays, engagements, funeral services, and installations." /><div className="service-grid">{eventPages.map((item) => <EventCard key={item.slug} item={item} />)}</div><div className="cta-panel"><h2>Planning an event?</h2><p>Send a quick inquiry with your date, city, guest count, and floral style. Maryam can respond with a polished quote pathway.</p><a className="whatsapp-action" href={whatsappHref(`Hi ${business.businessName}, I need event flowers.\nEvent Type:\nDate:\nCity:\nGuest Count:\nMy Name:\nMy Phone:`)}><WhatsAppIcon /> WhatsApp Event Inquiry</a></div></PageShell>;
 }
 
 function EventLanding() {
@@ -658,14 +704,14 @@ function EventLanding() {
       <SectionHeading eyebrow="Gallery" title={`${event.title} inspiration`} text="A concise visual set showing how this service can feel in a premium florist website." />
       <div className="gallery-grid">{[event.image, img('photo-1469371670807-013ccf25f16a'), img('photo-1507504031003-b417219a0fde')].map((image, index) => <Reveal className="gallery-card" key={`${event.slug}-${index}`}><ImageFrame src={image} alt={`${event.title} floral gallery ${index + 1}`} /><span>{['Feature flowers', 'Table styling', 'Room moment'][index]}</span></Reveal>)}</div>
       <SectionHeading eyebrow="Packages" title="Event floral packages" />
-      <div className="pricing-grid">{packages.map(([title, price, copy]) => <div className="pricing-card" key={title}><h3>{title}</h3><strong>{price}</strong><p>{copy}</p><Link className="primary" to="/order-inquiry">Request Package</Link></div>)}</div>
-      <div className="cta-panel"><h2>Share your event details</h2><p>Send the date, venue, city, guest count, colour palette, and budget range for a tailored floral inquiry.</p><a className="whatsapp-action" href={whatsappHref(`Hi ${business.businessName}, I would like ${event.title} flowers.\nDate:\nVenue:\nCity:\nGuest Count:\nStyle:\nBudget:\nMy Name:\nMy Phone:`)}>WhatsApp Inquiry</a></div>
+      <div className="pricing-grid">{packages.map(([title, price, copy]) => <div className="pricing-card" key={title}><h3>{title}</h3><strong>{price}</strong><p>{copy}</p><Link className="primary" to="/order-inquiry"><ButtonIcon type="send" /> Request Package</Link></div>)}</div>
+      <div className="cta-panel"><h2>Share your event details</h2><p>Send the date, venue, city, guest count, colour palette, and budget range for a tailored floral inquiry.</p><a className="whatsapp-action" href={whatsappHref(`Hi ${business.businessName}, I would like ${event.title} flowers.\nDate:\nVenue:\nCity:\nGuest Count:\nStyle:\nBudget:\nMy Name:\nMy Phone:`)}><WhatsAppIcon /> WhatsApp Inquiry</a></div>
     </PageShell>
   );
 }
 
 function Subscription() {
-  return <PageShell title="Flower Subscription" eyebrow="Fresh flowers on repeat" text="Recurring bouquet plans for homes, offices, gifting, and hospitality spaces. No account required to request a subscription."><Seo title="Flower Subscription" description="Weekly, bi-weekly, and monthly flower subscription plans with pause anytime, gift options, and local delivery." /><PlanGrid /><div className="cta-panel"><h2>Request a subscription</h2><p>Choose a cadence and send an inquiry by email or WhatsApp. A production form handler can be connected later without redesigning the experience.</p><Link className="primary" to="/cart">Start Subscription Inquiry</Link></div></PageShell>;
+  return <PageShell title="Flower Subscription" eyebrow="Fresh flowers on repeat" text="Recurring bouquet plans for homes, offices, gifting, and hospitality spaces. No account required to request a subscription."><Seo title="Flower Subscription" description="Weekly, bi-weekly, and monthly flower subscription plans with pause anytime, gift options, and local delivery." /><PlanGrid /><div className="cta-panel"><h2>Request a subscription</h2><p>Choose a cadence and send an inquiry by email or WhatsApp. A production form handler can be connected later without redesigning the experience.</p><Link className="primary" to="/cart"><ButtonIcon type="cart" /> Start Subscription Inquiry</Link></div></PageShell>;
 }
 
 function Delivery() {
@@ -673,14 +719,14 @@ function Delivery() {
   return (
     <PageShell title="Delivery Areas" eyebrow="GTA same-day delivery" text="Local delivery guidance with a postal checker, delivery fees, cutoff timing, and service FAQs.">
       <Seo title="Delivery Areas" description="Same-day flower delivery for Toronto, Brampton, Mississauga, Vaughan, Markham, Richmond Hill, North York, Etobicoke, and Scarborough." />
-      <div className="delivery-layout"><ImageFrame src={img('photo-1561181286-d3fee7d55364')} alt="Wrapped flowers ready for delivery across the GTA" /><div className="checker"><h2>Postal code checker</h2><label>Enter postal code<input value={postal} onChange={(e) => setPostal(e.target.value)} placeholder="M5V 2T6" /></label><p>{postal ? 'Great news: this postal code is inside the sample GTA delivery zone.' : `Same-day delivery cutoff is ${business.sameDayCutoff}.`}</p><a className="whatsapp-action" href={whatsappHref(`Hi ${business.businessName}, can you deliver flowers to my postal code?\nPostal Code:\nDelivery Date:\nMy Name:\nMy Phone:`)}>Ask on WhatsApp</a></div></div>
+      <div className="delivery-layout"><ImageFrame src={img('photo-1561181286-d3fee7d55364')} alt="Wrapped flowers ready for delivery across the GTA" /><div className="checker"><h2>Postal code checker</h2><label>Enter postal code<input value={postal} onChange={(e) => setPostal(e.target.value)} placeholder="M5V 2T6" /></label><p>{postal ? 'Great news: this postal code is inside the sample GTA delivery zone.' : `Same-day delivery cutoff is ${business.sameDayCutoff}.`}</p><a className="whatsapp-action" href={whatsappHref(`Hi ${business.businessName}, can you deliver flowers to my postal code?\nPostal Code:\nDelivery Date:\nMy Name:\nMy Phone:`)}><WhatsAppIcon /> Ask on WhatsApp</a></div></div>
       <div className="pricing-grid">{['Toronto core $14', 'GTA nearby $18', 'Extended GTA $24'].map((fee) => <div className="pricing-card" key={fee}><Truck /><h3>{fee}</h3><p>Clear delivery fee guidance helps customers choose the right flower delivery option.</p></div>)}</div><AreaChips /><FAQ />
     </PageShell>
   );
 }
 
 function About() {
-  return <PageShell title="About Maryam" eyebrow="Founder story" text="Bloom by Maryam is a girl-owned Canadian flower boutique shaped around graceful design, thoughtful gifting, and reliable GTA delivery."><Seo title="About" description="Professional brand story for Bloom by Maryam, a girl-owned Canadian floral boutique focused on elegant design, sustainability, GTA delivery, and personal service." /><div className="split"><Reveal><h2>Flowers with softness, intention, and a personal touch.</h2><p>Maryam started Bloom by Maryam to make premium florals feel warm and approachable. Every bouquet is designed to feel chosen with care, from a soft birthday wrap to a full wedding floral story.</p><p>The boutique philosophy is simple: use beautiful seasonal flowers, keep the palette refined, package every detail thoughtfully, and make ordering feel calm for busy gift-givers across Toronto and the GTA.</p><div className="button-row"><Link className="primary" to="/shop">Shop Flowers</Link><a className="whatsapp-action" href={whatsappHref(productWhatsappMessage({ name: 'Custom bouquet' }))}>Ask Maryam on WhatsApp</a></div></Reveal><Reveal className="feature-panel"><ImageFrame src={img('photo-1487070183336-b863922373d4')} alt="Founder-style floral studio table with flowers and tools" /></Reveal></div><div className="service-grid">{[
+  return <PageShell title="About Maryam" eyebrow="Founder story" text="Bloom by Maryam is a girl-owned Canadian flower boutique shaped around graceful design, thoughtful gifting, and reliable GTA delivery."><Seo title="About" description="Professional brand story for Bloom by Maryam, a girl-owned Canadian floral boutique focused on elegant design, sustainability, GTA delivery, and personal service." /><div className="split"><Reveal><h2>Flowers with softness, intention, and a personal touch.</h2><p>Maryam started Bloom by Maryam to make premium florals feel warm and approachable. Every bouquet is designed to feel chosen with care, from a soft birthday wrap to a full wedding floral story.</p><p>The boutique philosophy is simple: use beautiful seasonal flowers, keep the palette refined, package every detail thoughtfully, and make ordering feel calm for busy gift-givers across Toronto and the GTA.</p><div className="button-row"><Link className="primary" to="/shop"><ButtonIcon type="shop" /> Shop Flowers</Link><a className="whatsapp-action" href={whatsappHref(productWhatsappMessage({ name: 'Custom bouquet' }))}><WhatsAppIcon /> Ask Maryam on WhatsApp</a></div></Reveal><Reveal className="feature-panel"><ImageFrame src={img('photo-1487070183336-b863922373d4')} alt="Founder-style floral studio table with flowers and tools" /></Reveal></div><div className="service-grid">{[
     ['Brand story', 'A modern Canadian floral studio built around meaningful gifts, romantic textures, and boutique service.', img('photo-1525310072745-f49212b5ac6d')],
     ['Mission', 'To help customers send flowers that feel personal, polished, fresh, and easy to order.', img('photo-1501004318641-b39e6451bec6')],
     ['Floral philosophy', 'Soft movement, balanced colour, premium stems, and arrangements that feel elegant without feeling overly formal.', img('photo-1490750967868-88aa4486c946')],
@@ -695,14 +741,14 @@ function Gallery() {
 }
 
 function Blog() {
-  return <PageShell title="Floral Journal" eyebrow="Helpful flower content" text="Flower care, gifting, wedding planning, and local delivery articles for thoughtful shoppers."><Seo title="Blog" description="Flower care, birthday flowers, wedding trends, same-day delivery, flower meanings, and Mother's Day gift ideas." /><div className="blog-grid">{blogPosts.map((post) => <article className="blog-card" key={post.title}><ImageFrame src={post.image} alt={`${post.title} flower lifestyle article`} /><div className="blog-meta"><span>{post.category}</span><small>{post.readTime} · By {post.author}</small></div><h3>{post.title}</h3><p>{post.excerpt}</p><Link className="secondary" to="/contact">Read Article</Link></article>)}</div></PageShell>;
+  return <PageShell title="Floral Journal" eyebrow="Helpful flower content" text="Flower care, gifting, wedding planning, and local delivery articles for thoughtful shoppers."><Seo title="Blog" description="Flower care, birthday flowers, wedding trends, same-day delivery, flower meanings, and Mother's Day gift ideas." /><div className="blog-grid">{blogPosts.map((post) => <article className="blog-card" key={post.title}><ImageFrame src={post.image} alt={`${post.title} flower lifestyle article`} /><div className="blog-meta"><span>{post.category}</span><small>{post.readTime} · By {post.author}</small></div><h3>{post.title}</h3><p>{post.excerpt}</p><Link className="secondary" to="/contact"><ButtonIcon type="learn" /> Read Article</Link></article>)}</div></PageShell>;
 }
 
 function Contact() {
   return (
     <PageShell title="Contact Bloom by Maryam" eyebrow="We would love to help" text="Contact paths for orders, weddings, events, subscriptions, and delivery questions.">
       <Seo title="Contact" description="Contact Bloom by Maryam flower boutique by form, phone, email, WhatsApp, business hours, Instagram, and location section." />
-      <div className="contact-layout"><DemoForm title="Send a message" fields={['Full name', 'Email', 'Phone', 'Message']} /><div className="contact-card"><ImageFrame src={img('photo-1519378058457-4c29a0a2efac')} alt="Bloom by Maryam studio flowers prepared for customer pickup" /><p><Phone /> {brand.phone}</p><p><Mail /> {brand.email}</p><p><Clock /> Mon-Sat 9 AM - 6 PM</p><p><MapPin /> Toronto GTA studio location</p><div className="map-placeholder">Toronto GTA floral delivery area</div><div className="button-row"><Link className="primary" to="/order-inquiry">Email Order</Link><a className="whatsapp-action" href={whatsappHref(productWhatsappMessage({ name: 'Custom bouquet' }))}>WhatsApp Order</a></div></div></div>
+      <div className="contact-layout"><DemoForm title="Send a message" fields={['Full name', 'Email', 'Phone', 'Message']} /><div className="contact-card"><ImageFrame src={img('photo-1519378058457-4c29a0a2efac')} alt="Bloom by Maryam studio flowers prepared for customer pickup" /><p><Phone /> {brand.phone}</p><p><Mail /> {brand.email}</p><p><Clock /> Mon-Sat 9 AM - 6 PM</p><p><MapPin /> Toronto GTA studio location</p><div className="map-placeholder">Toronto GTA floral delivery area</div><div className="button-row"><Link className="primary" to="/order-inquiry"><ButtonIcon type="contact" /> Email Order</Link><a className="whatsapp-action" href={whatsappHref(productWhatsappMessage({ name: 'Custom bouquet' }))}><WhatsAppIcon /> WhatsApp Order</a></div></div></div>
     </PageShell>
   );
 }
@@ -711,7 +757,7 @@ function Cart() {
   const { items, total, updateQty, remove } = useCart();
   return <PageShell title="Cart & Order Inquiry" eyebrow="No account required" text="Review your flowers, then send an order inquiry by email or WhatsApp.">
     <Seo title="Cart and Order Inquiry" description="No-login flower order inquiry cart with email and WhatsApp order options." />
-    {items.length === 0 ? <EmptyState text="Your cart is ready for fresh blooms. You can still send a custom bouquet inquiry." cta="/shop" label="Shop flowers" /> : <div className="cart-layout"><div>{items.map((item) => <div className="cart-row" key={item.key}><ImageFrame src={item.image} alt={`${item.name} cart thumbnail`} /><div><h3>{item.name}</h3><p>{item.options?.size || 'Classic'} · ${currency(item.price)}</p></div><div className="quantity"><button onClick={() => updateQty(item.key, item.qty - 1)}>-</button><span>{item.qty}</span><button onClick={() => updateQty(item.key, item.qty + 1)}>+</button></div><button onClick={() => remove(item.key)} aria-label={`Remove ${item.name}`}><Trash2 /></button></div>)}</div><aside className="summary"><h2>Inquiry summary</h2><p>Subtotal <strong>{currency(total)}</strong></p><p>Delivery estimate <strong>$14</strong></p><p>Estimated HST <strong>{currency(total * 0.13)}</strong></p><h3>Estimated total {currency(total + 14 + total * 0.13)}</h3><Link className="primary full" to="/order-inquiry">Continue to Order Inquiry</Link><a className="whatsapp-action full" href={whatsappHref(productWhatsappMessage({ name: items.map((item) => `${item.name} x${item.qty}`).join(', ') || 'Custom bouquet' }))}>Order on WhatsApp</a></aside></div>}
+    {items.length === 0 ? <EmptyState text="Your cart is ready for fresh blooms. You can still send a custom bouquet inquiry." cta="/shop" label="Shop flowers" /> : <div className="cart-layout"><div>{items.map((item) => <div className="cart-row" key={item.key}><ImageFrame src={item.image} alt={`${item.name} cart thumbnail`} /><div><h3>{item.name}</h3><p>{item.options?.size || 'Classic'} · ${currency(item.price)}</p></div><div className="quantity"><button onClick={() => updateQty(item.key, item.qty - 1)}>-</button><span>{item.qty}</span><button onClick={() => updateQty(item.key, item.qty + 1)}>+</button></div><button onClick={() => remove(item.key)} aria-label={`Remove ${item.name}`}><Trash2 /></button></div>)}</div><aside className="summary"><h2>Inquiry summary</h2><p>Subtotal <strong>{currency(total)}</strong></p><p>Delivery estimate <strong>$14</strong></p><p>Estimated HST <strong>{currency(total * 0.13)}</strong></p><h3>Estimated total {currency(total + 14 + total * 0.13)}</h3><Link className="primary full" to="/order-inquiry"><ButtonIcon type="send" /> Continue to Order Inquiry</Link><a className="whatsapp-action full" href={whatsappHref(productWhatsappMessage({ name: items.map((item) => `${item.name} x${item.qty}`).join(', ') || 'Custom bouquet' }))}><WhatsAppIcon /> Order on WhatsApp</a></aside></div>}
   </PageShell>;
 }
 
@@ -749,14 +795,14 @@ function OrderInquiry() {
           <label>Occasion<input value={details.occasion} onChange={(e) => update('occasion', e.target.value)} placeholder="Birthday, sympathy, wedding, thank you..." /></label>
           <label>Gift message<textarea rows="3" value={details.giftMessage} onChange={(e) => update('giftMessage', e.target.value)} /></label>
           <label>Special instructions<textarea rows="4" value={details.instructions} onChange={(e) => update('instructions', e.target.value)} placeholder="Add-ons, colours, recipient notes, delivery instructions..." /></label>
-          <button className="primary" type="submit">Prepare Order Inquiry</button>
+          <button className="primary" type="submit"><ButtonIcon type="send" /> Prepare Order Inquiry</button>
           {sent && <div className="success order-success"><Sparkles /><span>Order inquiry prepared. Use email or WhatsApp below to send it.</span></div>}
         </form>
         <aside className="summary order-summary">
           <h2>Prepared inquiry</h2>
           <pre>{buildOrderBody(details, items, estimatedTotal)}</pre>
-          <a className="primary full" href={emailLink}>Send Email Inquiry</a>
-          <a className="whatsapp-action full" href={whatsappLink}>Order on WhatsApp</a>
+          <a className="primary full" href={emailLink}><ButtonIcon type="contact" /> Send Email Inquiry</a>
+          <a className="whatsapp-action full" href={whatsappLink}><WhatsAppIcon /> Order on WhatsApp</a>
           <p className="integration-note">This inquiry can be sent by email or WhatsApp. A production form handler can be connected when live email sending is required.</p>
         </aside>
       </div>
@@ -801,7 +847,7 @@ function PageShell({ eyebrow, title, text, image = img('photo-1561181286-d3fee7d
           <span className="eyebrow">{eyebrow}</span>
           <h1>{title}</h1>
           <p>{text}</p>
-          <div className="button-row"><Link className="primary btn-large" to={ctaTo}>{ctaLabel}</Link><a className="whatsapp-action btn-large" href={secondaryHref}><MessageCircle size={18} /> {secondaryLabel}</a></div>
+          <div className="button-row"><Link className="primary btn-large" to={ctaTo}><ButtonIcon type={ctaLabel.toLowerCase().includes('shop') ? 'shop' : ctaLabel.toLowerCase().includes('event') ? 'calendar' : 'send'} /> {ctaLabel}</Link><a className="whatsapp-action btn-large" href={secondaryHref}><WhatsAppIcon /> {secondaryLabel}</a></div>
           <div className="trust-row"><span><Truck size={15} /> Same-day before {business.sameDayCutoff}</span><span><MapPin size={15} /> Toronto + GTA</span><span><Heart size={15} /> Custom gift messages</span></div>
         </div>
         <Reveal className="page-hero-media"><ImageFrame src={image} alt={`${title} premium flower hero`} /></Reveal>
@@ -816,7 +862,7 @@ function Select({ label, value, onChange, options }) {
 }
 
 function PlanGrid() {
-  return <div className="pricing-grid">{planDetails.map(({ name, price, frequency, description, image }) => <div className="pricing-card" key={name}><ImageFrame src={image} alt={`${name} flower subscription arrangement`} /><h3>{name}</h3><strong>${price}</strong><p>{frequency} delivery. {description} Pause anytime, add a gift option, and keep the delivery cadence simple.</p><Link className="primary" to="/order-inquiry">Request Plan</Link><a className="whatsapp-action" href={whatsappHref(`Hi ${business.businessName}, I would like to request the ${name} subscription.\nDelivery Area:\nStart Date:\nMy Name:\nMy Phone:`)}>WhatsApp Plan</a></div>)}</div>;
+  return <div className="pricing-grid">{planDetails.map(({ name, price, frequency, description, image }) => <div className="pricing-card" key={name}><ImageFrame src={image} alt={`${name} flower subscription arrangement`} /><h3>{name}</h3><strong>${price}</strong><p>{frequency} delivery. {description} Pause anytime, add a gift option, and keep the delivery cadence simple.</p><Link className="primary" to="/order-inquiry"><ButtonIcon type="send" /> Request Plan</Link><a className="whatsapp-action" href={whatsappHref(`Hi ${business.businessName}, I would like to request the ${name} subscription.\nDelivery Area:\nStart Date:\nMy Name:\nMy Phone:`)}><WhatsAppIcon /> WhatsApp Plan</a></div>)}</div>;
 }
 
 function WhyChoose() {
@@ -848,18 +894,14 @@ function InstagramGrid({ expanded = false }) {
   return <section><SectionHeading eyebrow="Gallery" title="Instagram-style floral moments" /><div className="gallery-grid">{galleryItems.slice(0, expanded ? galleryItems.length : 6).map((item) => <Reveal className="gallery-card" key={item.title}><ImageFrame src={item.image} alt={`${item.title} Bloom by Maryam gallery image`} /><span>{item.title}</span></Reveal>)}</div></section>;
 }
 
-function Newsletter() {
-  return <section className="newsletter"><h2>Join the Bloom list</h2><p>Seasonal flower notes, gift reminders, wedding inspiration, and fresh boutique updates.</p><form onSubmit={(e) => e.preventDefault()}><label>Email address<input type="email" placeholder="you@example.com" /></label><button className="primary" type="submit">Sign Up</button></form></section>;
-}
-
 function ConsultationForm() {
-  return <div className="form-panel"><h2>Wedding consultation form</h2><DemoForm fields={['Full name', 'Email', 'Phone', 'Wedding date', 'Venue', 'City', 'Guest count', 'Budget range', 'Colour palette', 'Flower preferences', 'Inspiration upload demo field', 'Notes']} button="Submit consultation request" /><div className="button-row"><Link className="secondary" to="/order-inquiry">Email Wedding Inquiry</Link><a className="whatsapp-action" href={whatsappHref(`Hi ${business.businessName}, I would like to book a wedding flower consultation.\nWedding Date:\nVenue:\nCity:\nGuest Count:\nBudget:\nMy Name:\nMy Phone:`)}>WhatsApp Wedding Inquiry</a></div></div>;
+  return <div className="form-panel"><h2>Wedding consultation form</h2><DemoForm fields={['Full name', 'Email', 'Phone', 'Wedding date', 'Venue', 'City', 'Guest count', 'Budget range', 'Colour palette', 'Flower preferences', 'Inspiration upload demo field', 'Notes']} button="Submit consultation request" /><div className="button-row"><Link className="secondary" to="/order-inquiry"><ButtonIcon type="contact" /> Email Wedding Inquiry</Link><a className="whatsapp-action" href={whatsappHref(`Hi ${business.businessName}, I would like to book a wedding flower consultation.\nWedding Date:\nVenue:\nCity:\nGuest Count:\nBudget:\nMy Name:\nMy Phone:`)}><WhatsAppIcon /> WhatsApp Wedding Inquiry</a></div></div>;
 }
 
 function DemoForm({ title, fields, button = 'Submit', onSuccess }) {
   const [sent, setSent] = useState(false);
   const submit = (event) => { event.preventDefault(); setSent(true); onSuccess?.(); };
-  return <form className="demo-form" onSubmit={submit}>{title && <h2>{title}</h2>}{fields.map((field) => <label key={field}>{field}{field.toLowerCase().includes('message') || field === 'Notes' ? <textarea rows="4" /> : field.toLowerCase().includes('upload') ? <span className="upload"><Upload size={16} /> Add inspiration image</span> : <input type={field.toLowerCase().includes('email') ? 'email' : field.toLowerCase().includes('date') ? 'date' : 'text'} />}</label>)}<button className="primary" type="submit">{button}</button>{sent && <p className="success">Your message is ready to review.</p>}</form>;
+  return <form className="demo-form" onSubmit={submit}>{title && <h2>{title}</h2>}{fields.map((field) => <label key={field}>{field}{field.toLowerCase().includes('message') || field === 'Notes' ? <textarea rows="4" /> : field.toLowerCase().includes('upload') ? <span className="upload"><Upload size={16} /> Add inspiration image</span> : <input type={field.toLowerCase().includes('email') ? 'email' : field.toLowerCase().includes('date') ? 'date' : 'text'} />}</label>)}<button className="primary" type="submit"><ButtonIcon type="send" /> {button}</button>{sent && <p className="success">Your message is ready to review.</p>}</form>;
 }
 
 function FAQ() {
@@ -884,7 +926,7 @@ function Reviews() {
 }
 
 function EmptyState({ text, cta, label }) {
-  return <div className="empty"><Flower2 /><p>{text}</p><Link className="primary" to={cta}>{label}</Link></div>;
+  return <div className="empty"><Flower2 /><p>{text}</p><Link className="primary" to={cta}><ButtonIcon type="shop" /> {label}</Link></div>;
 }
 
 function AuthPage({ title, text, register = false }) {
@@ -910,6 +952,7 @@ function FlowerLoader() {
 function App() {
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <CartProvider>
         <Layout>
           <React.Suspense fallback={<FlowerLoader />}>
