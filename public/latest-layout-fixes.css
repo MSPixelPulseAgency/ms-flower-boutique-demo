@@ -1,7 +1,6 @@
 /* Latest focused layout fixes requested by client.
-   - Keep product cards clickable for product details
-   - Hide Quick View from the button row
-   - Align Add to Cart + WhatsApp buttons cleanly
+   - Restore a working View Details link for product cards
+   - Keep Add to Cart + WhatsApp aligned cleanly
    - Replace hero visual with a dark blue rose/bouquet photo treatment
    - Align plan/subscription buttons full width
 */
@@ -20,48 +19,39 @@
   opacity: 0 !important;
 }
 
-/* Make the product card itself clickable via the existing product image link overlay */
+/* Product card should clearly provide a working details link, not fake full-card click */
 .product-card {
   position: relative !important;
-  cursor: pointer !important;
+  cursor: default !important;
 }
 .product-card .product-image::after {
-  content: "" !important;
-  position: absolute !important;
-  inset: 0 !important;
-  z-index: 1 !important;
-  border-radius: inherit !important;
-}
-.product-card .product-image,
-.product-card .product-meta,
-.product-card .product-copy,
-.product-card .rating {
-  position: relative !important;
+  display: none !important;
 }
 .product-card .product-meta,
 .product-card .product-copy,
 .product-card .rating {
-  z-index: 2 !important;
-  pointer-events: none !important;
-}
-.product-card .product-meta button,
-.product-card .product-actions,
-.product-card .product-actions * {
-  position: relative !important;
-  z-index: 4 !important;
   pointer-events: auto !important;
 }
 
-/* Remove Quick View from product card action row because full card now opens product details */
+/* Restore the product detail link and place it in its own full-width row */
 .product-card .product-actions > a:not(.whatsapp-action) {
-  display: none !important;
+  display: inline-flex !important;
+  grid-column: 1 / -1 !important;
+  width: 100% !important;
+  min-height: 44px !important;
+  justify-content: center !important;
+  white-space: nowrap !important;
 }
 
-/* Product card button alignment: price on top, two equal buttons below */
+.product-card .product-actions > a:not(.whatsapp-action)::after {
+  content: " Details";
+}
+
+/* Product card button alignment: price, view row, then two equal order buttons */
 .product-card .product-actions {
   display: grid !important;
   grid-template-columns: 1fr 1fr !important;
-  gap: 12px !important;
+  gap: 10px !important;
   align-items: stretch !important;
   width: 100% !important;
 }
@@ -85,7 +75,8 @@
 }
 
 .product-card .product-actions > button svg,
-.product-card .product-actions > .whatsapp-action svg {
+.product-card .product-actions > .whatsapp-action svg,
+.product-card .product-actions > a:not(.whatsapp-action) svg {
   width: 17px !important;
   height: 17px !important;
 }
