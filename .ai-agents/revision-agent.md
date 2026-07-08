@@ -7,6 +7,8 @@ Visual rules:
 - Preserve elegant serif headings and clean sans-serif body text.
 - Keep animations tasteful and smooth.
 - Keep mobile navigation usable and avoid horizontal overflow.
+- Preserve the five-item public header: Home, Shop, Occasions, Events, Contact.
+- Keep dropdowns stable on desktop hover/click and accordion based on mobile.
 
 Technical rules:
 - Do not break route paths or cart state.

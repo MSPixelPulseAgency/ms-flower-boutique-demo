@@ -6,6 +6,7 @@ Required focus:
 - Local flower delivery keywords for Toronto and the GTA.
 - Same-day flower delivery cutoff language.
 - Wedding flowers, corporate flowers, subscriptions, gift boxes, preserved flowers, sympathy flowers, and occasion flowers.
+- Dedicated SEO landing pages for `/occasions/:slug` and `/events/:slug`.
 - Clear H1 per page and logical heading order.
 - Meaningful meta descriptions through the `Seo` helper.
 - Accessible image-like floral artwork labels.
