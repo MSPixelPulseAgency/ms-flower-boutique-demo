@@ -16,14 +16,23 @@ Bloom by Maryam is a polished demo brand for a Toronto/GTA flower boutique offer
 - Responsive premium storefront with soft floral branding, pastel gradients, elegant typography, and tasteful animation.
 - Shop page with search, filters, sorting, product cards, wishlist buttons, quick view links, and cart actions.
 - Product detail pages with size options, delivery date/time, gift message, add-ons, quantity, care notes, guarantee, delivery info, and reviews.
-- Cart and checkout demo flow with totals, delivery fee, HST demo calculation, and static form success states.
+- No-login cart and Order Inquiry flow with totals, delivery fee, HST demo calculation, generated email template, mailto fallback, and prefilled WhatsApp fallback.
 - Wedding flowers page with packages, services, gallery-style visuals, and a detailed consultation form.
-- Customer dashboard and polished static admin dashboard for products, orders, leads, subscriptions, coupons, delivery zones, and messages.
+- Hidden customer/admin demo routes remain available for internal presentation, but the public navigation focuses on ordering, services, delivery, gallery, blog, and contact.
 - SEO-ready pages for local GTA flower delivery, wedding florals, subscriptions, occasions, delivery areas, and blog topics.
 
 ## Pages
 
-Home, Shop, Product Details, Occasions, Wedding Flowers, Events & Corporate Flowers, Flower Subscription, Delivery Areas, About, Gallery, Blog, Contact, Cart, Checkout Demo, Login, Register, Customer Dashboard, Admin Dashboard.
+Public pages: Home, Shop, Product Details, Occasions, Wedding Flowers, Events & Corporate Flowers, Flower Subscription, Delivery Areas, About, Gallery, Blog, Contact, Cart, Order Inquiry.
+
+Hidden demo routes: Login, Register, Customer Dashboard, Admin Dashboard.
+
+## Order Flow
+
+- Customers can browse and add products to cart without an account.
+- Order Inquiry generates a professional email template for `hello@mspixelpulse.com`.
+- WhatsApp buttons use a prefilled message and demo number `+10000000000`.
+- Real email sending is not configured in this static demo. The inquiry payload is structured so EmailJS or Formspree can be added later without redesigning the form.
 
 ## Tech Stack
 

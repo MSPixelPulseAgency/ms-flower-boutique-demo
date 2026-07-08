@@ -31,15 +31,16 @@ import {
   User,
   X
 } from 'lucide-react';
+import { business } from './config/business';
 import './styles/global.css';
 
 const brand = {
-  name: 'Bloom by Maryam',
-  email: 'hello@mspixelpulse.com',
-  phone: '+1 (000) 000-0000',
+  name: business.businessName,
+  email: business.email,
+  phone: business.phone,
   adminEmail: 'admin@bloombymaryam.ca',
   adminPassword: 'demo123',
-  areas: ['Toronto', 'Brampton', 'Mississauga', 'Vaughan', 'Markham', 'Richmond Hill', 'North York', 'Etobicoke', 'Scarborough']
+  areas: business.deliveryAreas
 };
 
 const img = (id, fit = 'crop') => `https://images.unsplash.com/${id}?auto=format&fit=${fit}&w=1200&q=82`;
@@ -194,6 +195,62 @@ const addOns = ['Greeting card', 'Chocolate box', 'Teddy bear', 'Candle', 'Ballo
 const CartContext = createContext(null);
 const useCart = () => useContext(CartContext);
 
+const cleanPhone = (value) => value.replace(/[^\d]/g, '');
+const currency = (value) => `$${Math.round(value)}`;
+const itemSummary = (items) => items.length
+  ? items.map((item) => {
+      const addons = item.options?.selectedAddOns?.length ? ` | Add-ons: ${item.options.selectedAddOns.join(', ')}` : '';
+      return `- ${item.name} | Qty: ${item.qty} | Price: ${currency(item.price)}${addons}`;
+    }).join('\n')
+  : '- Custom bouquet inquiry | Qty: 1 | Price: To be confirmed';
+
+function buildOrderBody(details, items, total) {
+  return [
+    'New Flower Order Inquiry - Bloom by Maryam',
+    '',
+    `Customer full name: ${details.name || 'Not provided'}`,
+    `Customer phone: ${details.phone || 'Not provided'}`,
+    `Customer email: ${details.email || 'Not provided'}`,
+    `Delivery address: ${details.address || 'Not provided'}`,
+    `City: ${details.city || 'Not provided'}`,
+    `Postal code: ${details.postal || 'Not provided'}`,
+    `Preferred delivery date: ${details.date || 'Not provided'}`,
+    `Preferred delivery time: ${details.time || 'Not provided'}`,
+    '',
+    'Selected products:',
+    itemSummary(items),
+    '',
+    `Gift message: ${details.giftMessage || 'None'}`,
+    `Occasion: ${details.occasion || 'Not provided'}`,
+    `Special instructions: ${details.instructions || 'None'}`,
+    `Estimated total: ${currency(total || 0)}`,
+    '',
+    'Submitted from Bloom by Maryam website'
+  ].join('\n');
+}
+
+function mailtoHref(details, items, total) {
+  const subject = 'New Flower Order Inquiry - Bloom by Maryam';
+  return `mailto:${business.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(buildOrderBody(details, items, total))}`;
+}
+
+function whatsappHref(message) {
+  return `https://wa.me/${cleanPhone(business.whatsappNumber)}?text=${encodeURIComponent(message)}`;
+}
+
+function productWhatsappMessage(product, qty = 1, giftMessage = '') {
+  return [
+    `Hi ${business.businessName}, I would like to place an order:`,
+    `Product: ${product?.name || ''}`,
+    `Quantity: ${qty}`,
+    'Delivery Date:',
+    'Delivery Area:',
+    `Gift Message: ${giftMessage}`,
+    'My Name:',
+    'My Phone:'
+  ].join('\n');
+}
+
 function CartProvider({ children }) {
   const [items, setItems] = useState([]);
   const [toast, setToast] = useState('');
@@ -229,23 +286,29 @@ function LogoMark() {
 
 function Header() {
   const [open, setOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
   const { items } = useCart();
-  const links = [
-    ['/', 'Home'], ['/shop', 'Shop'], ['/occasions', 'Occasions'], ['/wedding-flowers', 'Weddings'], ['/events-corporate', 'Events'], ['/subscription', 'Subscriptions'], ['/delivery-areas', 'Delivery'], ['/about', 'About'], ['/gallery', 'Gallery'], ['/blog', 'Blog'], ['/contact', 'Contact']
-  ];
+  const mainLinks = [['/', 'Home'], ['/shop', 'Shop'], ['/occasions', 'Occasions'], ['/wedding-flowers', 'Weddings'], ['/delivery-areas', 'Delivery'], ['/gallery', 'Gallery'], ['/contact', 'Contact']];
+  const moreLinks = [['/events-corporate', 'Events'], ['/subscription', 'Subscriptions'], ['/about', 'About'], ['/blog', 'Blog'], ['/delivery-areas#faq', 'FAQ']];
+  const mobileLinks = [...mainLinks, ...moreLinks.filter(([href]) => href !== '/delivery-areas#faq'), ['/cart', 'Cart / Order']];
   return (
     <header className="site-header">
       <Link className="brand" to="/" aria-label="Bloom by Maryam home"><LogoMark /><strong>{brand.name}</strong></Link>
       <nav className="desktop-nav" aria-label="Primary navigation">
-        {links.map(([href, label]) => <NavLink key={href} to={href}>{label}</NavLink>)}
+        {mainLinks.map(([href, label]) => <NavLink key={href} to={href}>{label}</NavLink>)}
+        <div className="nav-dropdown" onMouseLeave={() => setMoreOpen(false)}>
+          <button type="button" onClick={() => setMoreOpen(!moreOpen)} aria-expanded={moreOpen}>More <ChevronDown size={15} /></button>
+          <AnimatePresence>
+            {moreOpen && <motion.div className="more-menu" initial={{ opacity: 0, y: -8, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -8, scale: 0.98 }}>{moreLinks.map(([href, label]) => <NavLink key={href} to={href} onClick={() => setMoreOpen(false)}>{label}</NavLink>)}</motion.div>}
+          </AnimatePresence>
+        </div>
       </nav>
       <div className="header-actions">
-        <Link className="icon-link" to="/login" aria-label="Login"><User size={19} /></Link>
-        <Link className="cart-pill" to="/cart" aria-label={`Cart with ${items.length} items`}><ShoppingBag size={18} /><span>{items.length}</span></Link>
+        <Link className="cart-pill" to="/cart" aria-label={`Cart with ${items.length} items`}><ShoppingBag size={18} /><span>{items.length}</span><em>Order</em></Link>
         <button className="menu-button" type="button" onClick={() => setOpen(!open)} aria-label="Toggle mobile menu">{open ? <X /> : <Menu />}</button>
       </div>
       <AnimatePresence>
-        {open && <motion.nav className="mobile-nav" initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}>{links.map(([href, label]) => <NavLink key={href} to={href} onClick={() => setOpen(false)}>{label}</NavLink>)}</motion.nav>}
+        {open && <motion.nav className="mobile-nav" initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}>{mobileLinks.map(([href, label]) => <NavLink key={href} to={href} onClick={() => setOpen(false)}>{label}</NavLink>)}</motion.nav>}
       </AnimatePresence>
     </header>
   );
@@ -254,12 +317,13 @@ function Header() {
 function Footer() {
   return (
     <footer className="footer">
+      <div className="footer-cta"><h2>Ready to send something beautiful?</h2><p>No account needed. Build a cart, send an email inquiry, or start a WhatsApp order with Maryam’s demo boutique.</p><div className="button-row"><Link className="primary" to="/cart">Start Order Inquiry</Link><a className="whatsapp-action" href={whatsappHref(productWhatsappMessage({ name: 'Custom bouquet' }))}>Order on WhatsApp</a></div></div>
       <div>
         <Link className="brand footer-brand" to="/"><LogoMark /><strong>{brand.name}</strong></Link>
         <p>Demo premium Canadian flower boutique by MSPixelPulse. Elegant bouquets, wedding florals, gifts, subscriptions, and same-day delivery experiences.</p>
       </div>
-      <div><h3>Visit</h3><Link to="/shop">Shop flowers</Link><Link to="/wedding-flowers">Wedding studio</Link><Link to="/delivery-areas">Delivery areas</Link><Link to="/admin">Admin demo</Link></div>
-      <div><h3>Contact</h3><p><Mail size={16} /> {brand.email}</p><p><Phone size={16} /> {brand.phone}</p><p><Instagram size={16} /> Instagram demo</p></div>
+      <div><h3>Visit</h3><Link to="/shop">Shop flowers</Link><Link to="/wedding-flowers">Wedding studio</Link><Link to="/delivery-areas">Delivery areas</Link><Link to="/gallery">Gallery</Link></div>
+      <div><h3>Order</h3><p><Mail size={16} /> {brand.email}</p><p><Phone size={16} /> {brand.phone}</p><p><MessageCircle size={16} /> WhatsApp demo</p><p><Instagram size={16} /> Instagram demo</p></div>
     </footer>
   );
 }
@@ -271,7 +335,7 @@ function Layout({ children }) {
       <Header />
       <main>{children}</main>
       <Link className="floating-cart" to="/cart" aria-label="Open cart"><ShoppingBag /><span>{items.length}</span></Link>
-      <a className="floating-whatsapp" href="https://wa.me/10000000000" aria-label="Chat on WhatsApp"><MessageCircle /></a>
+      <a className="floating-whatsapp" href={whatsappHref(productWhatsappMessage({ name: 'Custom bouquet' }))} aria-label="Order on WhatsApp"><MessageCircle /></a>
       <AnimatePresence>{toast && <motion.div className="toast" initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: 20, opacity: 0 }}>{toast}</motion.div>}</AnimatePresence>
       <Footer />
     </>
@@ -313,7 +377,7 @@ function ProductCard({ product }) {
       </div>
       <p className="product-copy">{product.description}</p>
       <div className="rating"><Star size={16} fill="currentColor" /> {product.rating} · {product.colour} · {product.flowerType}</div>
-      <div className="product-actions"><strong>${product.price}</strong><Link to={`/shop/${product.id}`}>Quick View</Link><button type="button" onClick={() => add(product)}>Add to Cart</button></div>
+      <div className="product-actions"><strong>${product.price}</strong><Link to={`/shop/${product.id}`}>Quick View</Link><button type="button" onClick={() => add(product)}>Add to Cart</button><a className="whatsapp-action" href={whatsappHref(productWhatsappMessage(product))}>WhatsApp</a></div>
     </Reveal>
   );
 }
@@ -328,8 +392,8 @@ function Home() {
           <span className="eyebrow">Girl-owned Canadian flower boutique</span>
           <h1>Fresh Blooms, Beautifully Delivered</h1>
           <p>A girl-owned Canadian floral boutique creating elegant bouquets, wedding flowers, and thoughtful gifts for life’s most beautiful moments.</p>
-          <div className="button-row"><Link className="primary" to="/shop">Shop Flowers</Link><Link className="secondary" to="/wedding-flowers">Book Wedding Consultation</Link></div>
-          <div className="same-day"><Truck size={18} /> Same-day GTA delivery available before 12 PM.</div>
+          <div className="button-row"><Link className="primary" to="/shop">Shop Flowers</Link><a className="whatsapp-action" href={whatsappHref(productWhatsappMessage({ name: 'Custom bouquet' }))}>Order by WhatsApp</a><Link className="secondary" to="/wedding-flowers">Book Wedding Consultation</Link></div>
+          <div className="same-day"><Truck size={18} /> Same-day GTA delivery before {business.sameDayCutoff}. No account needed.</div>
         </div>
         <div className="hero-visual"><ImageFrame src={img('photo-1525310072745-f49212b5ac6d')} alt="Luxury blush floral bouquet on a boutique studio table" className="hero-photo" /><div className="floating-stat"><Sparkles /> 16 demo bouquets ready to shop</div><div className="floating-stat second"><MapPin /> Toronto and GTA delivery</div></div>
       </section>
@@ -399,7 +463,7 @@ function ProductDetails() {
           <h3>Add-ons</h3>
           <div className="addon-grid">{addOns.map((item) => <label key={item}><input type="checkbox" checked={selectedAddOns.includes(item)} onChange={(e) => setSelectedAddOns(e.target.checked ? [...selectedAddOns, item] : selectedAddOns.filter((a) => a !== item))} /> {item}</label>)}</div>
           <div className="quantity"><button onClick={() => setQty(Math.max(1, qty - 1))} type="button">-</button><span>{qty}</span><button onClick={() => setQty(qty + 1)} type="button">+</button></div>
-          <button className="primary full" type="button" onClick={() => Array.from({ length: qty }).forEach(() => add({ ...product, price }, { size, selectedAddOns }))}>Add to cart</button>
+          <div className="detail-actions"><button className="primary full" type="button" onClick={() => Array.from({ length: qty }).forEach(() => add({ ...product, price }, { size, selectedAddOns }))}>Add to Cart</button><Link className="secondary full" to="/cart">Order Inquiry</Link><a className="whatsapp-action full" href={whatsappHref(productWhatsappMessage(product, qty))}>Order on WhatsApp</a></div>
           <div className="info-list"><p><Leaf /> Care instructions included with every bouquet.</p><p><PackageCheck /> Freshness guarantee on all demo arrangements.</p><p><Truck /> Same-day delivery before 12 PM where available.</p></div>
         </div>
       </div>
@@ -421,18 +485,18 @@ function Wedding() {
         ['Petite Ceremony', 1200, 'For city hall, intimate restaurants, and small ceremonies.', ['Bridal bouquet', 'Boutonniere set', 'Pickup or local delivery'], img('photo-1519741497674-611481863552')],
         ['Signature Wedding', 2800, 'A balanced ceremony and reception floral plan for modern GTA weddings.', ['Personal flowers', 'Ceremony focal blooms', 'Reception centrepieces'], img('photo-1469371670807-013ccf25f16a')],
         ['Luxe Floral Weekend', 5200, 'High-touch floral styling for full wedding weekends and statement installations.', ['Design consultation', 'Installations', 'Setup and strike support'], img('photo-1519167758481-83f550bb49b3')]
-      ].map(([plan, price, copy, features, image], i) => <div className={`pricing-card wedding-package ${i === 1 ? 'featured' : ''}`} key={plan}><ImageFrame src={image} alt={`${plan} wedding floral package`} /><h3>{plan}</h3>{i === 1 && <span className="recommended">Recommended</span>}<strong>${price}+</strong><p>{copy}</p><ul>{features.map((f) => <li key={f}>{f}</li>)}</ul><Link className={i === 1 ? 'primary' : 'secondary'} to="/contact">Start Inquiry</Link></div>)}</div>
+      ].map(([plan, price, copy, features, image], i) => <div className={`pricing-card wedding-package ${i === 1 ? 'featured' : ''}`} key={plan}><ImageFrame src={image} alt={`${plan} wedding floral package`} /><h3>{plan}</h3>{i === 1 && <span className="recommended">Recommended</span>}<strong>${price}+</strong><p>{copy}</p><ul>{features.map((f) => <li key={f}>{f}</li>)}</ul><Link className={i === 1 ? 'primary' : 'secondary'} to="/contact">Email Inquiry</Link><a className="whatsapp-action" href={whatsappHref(`Hi ${business.businessName}, I would like to ask about ${plan} wedding flowers.\nWedding Date:\nVenue:\nCity:\nGuest Count:\nMy Name:\nMy Phone:`)}>WhatsApp Wedding Inquiry</a></div>)}</div>
       <ConsultationForm />
     </PageShell>
   );
 }
 
 function Events() {
-  return <PageShell title="Events & Corporate Flowers" eyebrow="Polished recurring florals" text="Corporate, hospitality, celebration, and sympathy floral services presented for lead generation."><Seo title="Events and Corporate Flowers" description="Corporate weekly flowers, office reception flowers, restaurant arrangements, hotel lobby flowers, baby showers, birthdays, engagements, funeral services, and installations." /><div className="service-grid">{eventServices.map((item) => <ServiceCard key={item.title} {...item} />)}</div></PageShell>;
+  return <PageShell title="Events & Corporate Flowers" eyebrow="Polished recurring florals" text="Corporate, hospitality, celebration, and sympathy floral services presented for lead generation."><Seo title="Events and Corporate Flowers" description="Corporate weekly flowers, office reception flowers, restaurant arrangements, hotel lobby flowers, baby showers, birthdays, engagements, funeral services, and installations." /><div className="service-grid">{eventServices.map((item) => <ServiceCard key={item.title} {...item} />)}</div><div className="cta-panel"><h2>Planning an event?</h2><p>Send a quick inquiry with your date, city, guest count, and floral style. Maryam can respond with a demo quote path.</p><a className="whatsapp-action" href={whatsappHref(`Hi ${business.businessName}, I need event flowers.\nEvent Type:\nDate:\nCity:\nGuest Count:\nMy Name:\nMy Phone:`)}>WhatsApp Event Inquiry</a></div></PageShell>;
 }
 
 function Subscription() {
-  return <PageShell title="Flower Subscription" eyebrow="Fresh flowers on repeat" text="Recurring bouquet plans for homes, offices, gifting, and hospitality spaces."><Seo title="Flower Subscription" description="Weekly, bi-weekly, and monthly flower subscription demo plans with pause anytime, gift options, and local delivery." /><PlanGrid /></PageShell>;
+  return <PageShell title="Flower Subscription" eyebrow="Fresh flowers on repeat" text="Recurring bouquet plans for homes, offices, gifting, and hospitality spaces. No account required to request a subscription."><Seo title="Flower Subscription" description="Weekly, bi-weekly, and monthly flower subscription demo plans with pause anytime, gift options, and local delivery." /><PlanGrid /><div className="cta-panel"><h2>Request a subscription</h2><p>Choose a cadence and send an inquiry by email or WhatsApp. This demo is ready for EmailJS or Formspree if live sending is added later.</p><Link className="primary" to="/cart">Start Subscription Inquiry</Link></div></PageShell>;
 }
 
 function Delivery() {
@@ -440,7 +504,7 @@ function Delivery() {
   return (
     <PageShell title="Delivery Areas" eyebrow="GTA same-day delivery" text="Demo local delivery page with postal checker, delivery fees, cutoff timing, and service FAQs.">
       <Seo title="Delivery Areas" description="Same-day flower delivery demo for Toronto, Brampton, Mississauga, Vaughan, Markham, Richmond Hill, North York, Etobicoke, and Scarborough." />
-      <div className="delivery-layout"><ImageFrame src={img('photo-1561181286-d3fee7d55364')} alt="Wrapped flowers ready for delivery across the GTA" /><div className="checker"><h2>Postal code checker</h2><label>Enter postal code<input value={postal} onChange={(e) => setPostal(e.target.value)} placeholder="M5V 2T6" /></label><p>{postal ? 'Great news: this demo postal code is inside the sample GTA delivery zone.' : 'Same-day delivery cutoff is 12 PM.'}</p></div></div>
+      <div className="delivery-layout"><ImageFrame src={img('photo-1561181286-d3fee7d55364')} alt="Wrapped flowers ready for delivery across the GTA" /><div className="checker"><h2>Postal code checker</h2><label>Enter postal code<input value={postal} onChange={(e) => setPostal(e.target.value)} placeholder="M5V 2T6" /></label><p>{postal ? 'Great news: this demo postal code is inside the sample GTA delivery zone.' : `Same-day delivery cutoff is ${business.sameDayCutoff}.`}</p><a className="whatsapp-action" href={whatsappHref(`Hi ${business.businessName}, can you deliver flowers to my postal code?\nPostal Code:\nDelivery Date:\nMy Name:\nMy Phone:`)}>Ask on WhatsApp</a></div></div>
       <div className="pricing-grid">{['Toronto core $14', 'GTA nearby $18', 'Extended GTA $24'].map((fee) => <div className="pricing-card" key={fee}><Truck /><h3>{fee}</h3><p>Demo fee card for checkout transparency and local SEO.</p></div>)}</div><AreaChips /><FAQ />
     </PageShell>
   );
@@ -468,18 +532,66 @@ function Contact() {
   return (
     <PageShell title="Contact Bloom by Maryam" eyebrow="We would love to help" text="Demo contact paths for orders, weddings, events, subscriptions, and delivery questions.">
       <Seo title="Contact" description="Contact Bloom by Maryam demo flower boutique by form, phone, email, WhatsApp, business hours, Instagram, and map placeholder." />
-      <div className="contact-layout"><DemoForm title="Send a message" fields={['Full name', 'Email', 'Phone', 'Message']} /><div className="contact-card"><ImageFrame src={img('photo-1519378058457-4c29a0a2efac')} alt="Bloom by Maryam studio flowers prepared for customer pickup" /><p><Phone /> {brand.phone}</p><p><Mail /> {brand.email}</p><p><Clock /> Mon-Sat 9 AM - 6 PM</p><p><MapPin /> Toronto GTA studio demo location</p><div className="map-placeholder">Google map placeholder for demo location</div><a className="primary" href="https://wa.me/10000000000">WhatsApp Us</a></div></div>
+      <div className="contact-layout"><DemoForm title="Send a message" fields={['Full name', 'Email', 'Phone', 'Message']} /><div className="contact-card"><ImageFrame src={img('photo-1519378058457-4c29a0a2efac')} alt="Bloom by Maryam studio flowers prepared for customer pickup" /><p><Phone /> {brand.phone}</p><p><Mail /> {brand.email}</p><p><Clock /> Mon-Sat 9 AM - 6 PM</p><p><MapPin /> Toronto GTA studio demo location</p><div className="map-placeholder">Google map placeholder for demo location</div><div className="button-row"><Link className="primary" to="/order-inquiry">Email Order</Link><a className="whatsapp-action" href={whatsappHref(productWhatsappMessage({ name: 'Custom bouquet' }))}>WhatsApp Order</a></div></div></div>
     </PageShell>
   );
 }
 
 function Cart() {
   const { items, total, updateQty, remove } = useCart();
-  return <PageShell title="Cart" eyebrow="Review your blooms" text="Demo cart with quantity controls, totals, gift styling, and checkout CTA."><Seo title="Cart" description="Demo flower cart with quantity updates and checkout." />{items.length === 0 ? <EmptyState text="Your cart is ready for fresh blooms." cta="/shop" label="Shop flowers" /> : <div className="cart-layout"><div>{items.map((item) => <div className="cart-row" key={item.key}><ImageFrame src={item.image} alt={`${item.name} cart thumbnail`} /><div><h3>{item.name}</h3><p>{item.options?.size || 'Classic'} · ${item.price}</p></div><div className="quantity"><button onClick={() => updateQty(item.key, item.qty - 1)}>-</button><span>{item.qty}</span><button onClick={() => updateQty(item.key, item.qty + 1)}>+</button></div><button onClick={() => remove(item.key)} aria-label={`Remove ${item.name}`}><Trash2 /></button></div>)}</div><aside className="summary"><h2>Order summary</h2><p>Subtotal <strong>${total}</strong></p><p>Demo delivery <strong>$14</strong></p><p>HST demo <strong>${Math.round(total * 0.13)}</strong></p><h3>Total ${total + 14 + Math.round(total * 0.13)}</h3><Link className="primary full" to="/checkout">Checkout Demo</Link></aside></div>}</PageShell>;
+  return <PageShell title="Cart & Order Inquiry" eyebrow="No account required" text="Review your flowers, then send an order inquiry by email or WhatsApp.">
+    <Seo title="Cart and Order Inquiry" description="No-login flower order inquiry cart with email and WhatsApp order options." />
+    {items.length === 0 ? <EmptyState text="Your cart is ready for fresh blooms. You can still send a custom bouquet inquiry." cta="/shop" label="Shop flowers" /> : <div className="cart-layout"><div>{items.map((item) => <div className="cart-row" key={item.key}><ImageFrame src={item.image} alt={`${item.name} cart thumbnail`} /><div><h3>{item.name}</h3><p>{item.options?.size || 'Classic'} · ${currency(item.price)}</p></div><div className="quantity"><button onClick={() => updateQty(item.key, item.qty - 1)}>-</button><span>{item.qty}</span><button onClick={() => updateQty(item.key, item.qty + 1)}>+</button></div><button onClick={() => remove(item.key)} aria-label={`Remove ${item.name}`}><Trash2 /></button></div>)}</div><aside className="summary"><h2>Inquiry summary</h2><p>Subtotal <strong>{currency(total)}</strong></p><p>Demo delivery <strong>$14</strong></p><p>HST demo <strong>{currency(total * 0.13)}</strong></p><h3>Estimated total {currency(total + 14 + total * 0.13)}</h3><Link className="primary full" to="/order-inquiry">Continue to Order Inquiry</Link><a className="whatsapp-action full" href={whatsappHref(productWhatsappMessage({ name: items.map((item) => `${item.name} x${item.qty}`).join(', ') || 'Custom bouquet' }))}>Order on WhatsApp</a></aside></div>}
+  </PageShell>;
 }
 
-function Checkout() {
-  return <PageShell title="Checkout Demo" eyebrow="Static checkout flow" text="A realistic checkout demo for delivery details, gift messages, and order confirmation."><Seo title="Checkout Demo" description="Static checkout demo for flower delivery, recipient details, delivery date, gift message, and order confirmation." /><DemoForm title="Delivery and payment demo" fields={['Recipient name', 'Delivery address', 'City', 'Postal code', 'Delivery date', 'Gift message', 'Card number demo']} /></PageShell>;
+function OrderInquiry() {
+  const { items, total } = useCart();
+  const [sent, setSent] = useState(false);
+  const [details, setDetails] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    address: '',
+    city: '',
+    postal: '',
+    date: '',
+    time: '10 AM - 1 PM',
+    occasion: '',
+    giftMessage: '',
+    instructions: ''
+  });
+  const estimatedTotal = total ? total + 14 + total * 0.13 : 0;
+  const emailLink = mailtoHref(details, items, estimatedTotal);
+  const whatsappLink = whatsappHref(buildOrderBody(details, items, estimatedTotal));
+  const update = (key, value) => setDetails((current) => ({ ...current, [key]: value }));
+  return (
+    <PageShell title="Order Inquiry" eyebrow="Email or WhatsApp" text="No login required. Fill in delivery details, then send the prepared email or WhatsApp message.">
+      <Seo title="Order Inquiry" description="Bloom by Maryam no-login flower order inquiry form with mailto and WhatsApp fallback." />
+      <div className="order-layout">
+        <form className="demo-form order-form" onSubmit={(event) => { event.preventDefault(); setSent(true); }}>
+          <h2>Delivery details</h2>
+          <div className="form-grid"><label>Customer full name<input value={details.name} onChange={(e) => update('name', e.target.value)} required /></label><label>Customer phone<input value={details.phone} onChange={(e) => update('phone', e.target.value)} required /></label></div>
+          <label>Customer email<input type="email" value={details.email} onChange={(e) => update('email', e.target.value)} /></label>
+          <label>Delivery address<input value={details.address} onChange={(e) => update('address', e.target.value)} /></label>
+          <div className="form-grid"><label>City<input value={details.city} onChange={(e) => update('city', e.target.value)} placeholder={business.city} /></label><label>Postal code<input value={details.postal} onChange={(e) => update('postal', e.target.value)} /></label></div>
+          <div className="form-grid"><label>Preferred delivery date<input type="date" value={details.date} onChange={(e) => update('date', e.target.value)} /></label><label>Preferred delivery time<select value={details.time} onChange={(e) => update('time', e.target.value)}><option>10 AM - 1 PM</option><option>1 PM - 4 PM</option><option>4 PM - 7 PM</option></select></label></div>
+          <label>Occasion<input value={details.occasion} onChange={(e) => update('occasion', e.target.value)} placeholder="Birthday, sympathy, wedding, thank you..." /></label>
+          <label>Gift message<textarea rows="3" value={details.giftMessage} onChange={(e) => update('giftMessage', e.target.value)} /></label>
+          <label>Special instructions<textarea rows="4" value={details.instructions} onChange={(e) => update('instructions', e.target.value)} placeholder="Add-ons, colours, recipient notes, delivery instructions..." /></label>
+          <button className="primary" type="submit">Prepare Order Inquiry</button>
+          {sent && <div className="success order-success"><Sparkles /><span>Order inquiry prepared. Use email or WhatsApp below to send it.</span></div>}
+        </form>
+        <aside className="summary order-summary">
+          <h2>Prepared inquiry</h2>
+          <pre>{buildOrderBody(details, items, estimatedTotal)}</pre>
+          <a className="primary full" href={emailLink}>Send Email Inquiry</a>
+          <a className="whatsapp-action full" href={whatsappLink}>Order on WhatsApp</a>
+          <p className="integration-note">Demo uses mailto and WhatsApp fallback. The structure is ready for EmailJS or Formspree when real email sending is configured.</p>
+        </aside>
+      </div>
+    </PageShell>
+  );
 }
 
 function Login() {
@@ -520,7 +632,7 @@ function Select({ label, value, onChange, options }) {
 }
 
 function PlanGrid() {
-  return <div className="pricing-grid">{planDetails.map(({ name, price, frequency, description, image }) => <div className="pricing-card" key={name}><ImageFrame src={image} alt={`${name} flower subscription arrangement`} /><h3>{name}</h3><strong>${price}</strong><p>{frequency} delivery. {description} Pause anytime, add a gift option, and keep the delivery cadence simple.</p><Link className="primary" to="/checkout">Choose Plan</Link></div>)}</div>;
+  return <div className="pricing-grid">{planDetails.map(({ name, price, frequency, description, image }) => <div className="pricing-card" key={name}><ImageFrame src={image} alt={`${name} flower subscription arrangement`} /><h3>{name}</h3><strong>${price}</strong><p>{frequency} delivery. {description} Pause anytime, add a gift option, and keep the delivery cadence simple.</p><Link className="primary" to="/order-inquiry">Request Plan</Link><a className="whatsapp-action" href={whatsappHref(`Hi ${business.businessName}, I would like to request the ${name} subscription.\nDelivery Area:\nStart Date:\nMy Name:\nMy Phone:`)}>WhatsApp Plan</a></div>)}</div>;
 }
 
 function WhyChoose() {
@@ -552,7 +664,7 @@ function Newsletter() {
 }
 
 function ConsultationForm() {
-  return <div className="form-panel"><h2>Wedding consultation form</h2><DemoForm fields={['Full name', 'Email', 'Phone', 'Wedding date', 'Venue', 'City', 'Guest count', 'Budget range', 'Colour palette', 'Flower preferences', 'Inspiration upload demo field', 'Notes']} button="Submit consultation request" /></div>;
+  return <div className="form-panel"><h2>Wedding consultation form</h2><DemoForm fields={['Full name', 'Email', 'Phone', 'Wedding date', 'Venue', 'City', 'Guest count', 'Budget range', 'Colour palette', 'Flower preferences', 'Inspiration upload demo field', 'Notes']} button="Submit consultation request" /><div className="button-row"><Link className="secondary" to="/order-inquiry">Email Wedding Inquiry</Link><a className="whatsapp-action" href={whatsappHref(`Hi ${business.businessName}, I would like to book a wedding flower consultation.\nWedding Date:\nVenue:\nCity:\nGuest Count:\nBudget:\nMy Name:\nMy Phone:`)}>WhatsApp Wedding Inquiry</a></div></div>;
 }
 
 function DemoForm({ title, fields, button = 'Submit', onSuccess }) {
@@ -562,7 +674,7 @@ function DemoForm({ title, fields, button = 'Submit', onSuccess }) {
 }
 
 function FAQ() {
-  return <div className="faq">{['What is the same-day cutoff?', 'Can I send a gift message?', 'Do you deliver outside Toronto?', 'Are wedding consultations available?'].map((q, i) => <details key={q}><summary>{q}</summary><p>{i === 0 ? 'Same-day demo cutoff is 12 PM.' : 'Yes. This demo includes the workflow customers expect from a premium florist.'}</p></details>)}</div>;
+  return <div className="faq" id="faq">{['What is the same-day cutoff?', 'Can I send a gift message?', 'Do you deliver outside Toronto?', 'Are wedding consultations available?'].map((q, i) => <details key={q}><summary>{q}</summary><p>{i === 0 ? `Same-day demo cutoff is ${business.sameDayCutoff}.` : 'Yes. This demo includes the workflow customers expect from a premium florist.'}</p></details>)}</div>;
 }
 
 function Reviews() {
@@ -613,7 +725,8 @@ function App() {
               <Route path="/blog" element={<Blog />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/cart" element={<Cart />} />
-              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/checkout" element={<OrderInquiry />} />
+              <Route path="/order-inquiry" element={<OrderInquiry />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/customer-dashboard" element={<CustomerDashboard />} />
