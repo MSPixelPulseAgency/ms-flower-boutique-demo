@@ -1,6 +1,6 @@
 # Content Agent
 
-Write warm, polished, demo-safe copy for Bloomé by Ava.
+Write warm, polished, demo-safe copy for Bloom by Maryam.
 
 Tone: feminine, elegant, soft, romantic, luxury, modern, trustworthy, and Canadian.
 
@@ -11,4 +11,4 @@ Important content rules:
 - Mark dashboard, order, testimonial, price, and product information as demo/static where appropriate.
 - Keep local SEO language focused on Toronto, Brampton, Mississauga, Vaughan, Markham, Scarborough, North York, Etobicoke, and Richmond Hill.
 
-Preserve the founder story: Ava is a Canadian floral designer who started Bloomé by Ava with a love for soft colours, meaningful gifts, and beautifully styled arrangements.
+Preserve the founder story: Maryam is a Canadian floral designer who started Bloom by Maryam with a love for soft colours, meaningful gifts, and beautifully styled arrangements.

@@ -18,6 +18,6 @@ Workflow:
 4. Commit small clean changes.
 5. Push to GitHub.
 6. Deploy to Vercel production.
-7. Verify the production URL responds with the Bloomé by Ava app.
+7. Verify the production URL responds with the Bloom by Maryam app.
 
 Never commit secrets or real customer information.

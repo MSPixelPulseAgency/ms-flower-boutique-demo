@@ -1,14 +1,14 @@
-# Bloomé by Ava
+# Bloom by Maryam
 
 Premium React + Vite demo website for a girl-owned Canadian flower boutique, created for MSPixelPulse Agency.
 
 ## Business Concept
 
-Bloomé by Ava is a polished demo brand for a Toronto/GTA flower boutique offering online flower delivery, same-day delivery, wedding flowers, event florals, subscriptions, gift boxes, preserved flowers, plants, and floral consultations.
+Bloom by Maryam is a polished demo brand for a Toronto/GTA flower boutique offering online flower delivery, same-day delivery, wedding flowers, event florals, subscriptions, gift boxes, preserved flowers, plants, and floral consultations.
 
 ## Demo Admin
 
-- Email: `admin@bloomebyava.ca`
+- Email: `admin@bloombymaryam.ca`
 - Password: `demo123`
 
 ## Features

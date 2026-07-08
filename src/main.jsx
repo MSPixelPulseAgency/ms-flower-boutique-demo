@@ -34,10 +34,10 @@ import {
 import './styles/global.css';
 
 const brand = {
-  name: 'Bloomé by Ava',
+  name: 'Bloom by Maryam',
   email: 'hello@mspixelpulse.com',
   phone: '+1 (000) 000-0000',
-  adminEmail: 'admin@bloomebyava.ca',
+  adminEmail: 'admin@bloombymaryam.ca',
   adminPassword: 'demo123',
   areas: ['Toronto', 'Brampton', 'Mississauga', 'Vaughan', 'Markham', 'Richmond Hill', 'North York', 'Etobicoke', 'Scarborough']
 };
@@ -65,7 +65,7 @@ const productImages = [
 
 const products = [
   ['blush-rose-signature-bouquet', 'Blush Rose Signature Bouquet', 89, 'Rose', 'Blush', 'romance', 'Roses', true, 4.9, 'Soft blush roses, lisianthus, and airy greenery wrapped in cream paper.', 'Gratitude, romance, and tender celebration.'],
-  ['avas-garden-luxe-arrangement', 'Ava’s Garden Luxe Arrangement', 145, 'Luxury', 'Pastel', 'birthday', 'Mixed', true, 5, 'A statement vase arrangement with roses, ranunculus, hydrangea, and seasonal accents.', 'Abundance, elegance, and unforgettable gifting.'],
+  ['maryams-garden-luxe-arrangement', 'Maryam’s Garden Luxe Arrangement', 145, 'Luxury', 'Pastel', 'birthday', 'Mixed', true, 5, 'A statement vase arrangement with roses, ranunculus, hydrangea, and seasonal accents.', 'Abundance, elegance, and unforgettable gifting.'],
   ['pastel-peony-dream', 'Pastel Peony Dream', 119, 'Seasonal', 'Pink', 'anniversary', 'Peonies', false, 4.8, 'Cloud-like peonies with delicate filler flowers in a romantic palette.', 'Prosperity, affection, and happy beginnings.'],
   ['white-orchid-elegance', 'White Orchid Elegance', 132, 'Plants', 'White', 'thank-you', 'Orchid', true, 4.9, 'A graceful white orchid styled in a ceramic pot with moss finishing.', 'Refined beauty, peace, and admiration.'],
   ['sunshine-tulip-wrap', 'Sunshine Tulip Wrap', 68, 'Everyday', 'Yellow', 'get-well', 'Tulips', true, 4.7, 'Cheerful tulips wrapped simply for bright, joyful delivery.', 'Warmth, optimism, and fresh starts.'],
@@ -172,7 +172,7 @@ const blogPosts = [
   ['Same-Day Flower Delivery Guide', 'Delivery', 'How cutoff times, delivery zones, and gift notes make last-minute flowers feel thoughtful.', '3 min read', img('photo-1561181286-d3fee7d55364')],
   ['Flower Colours and Their Meanings', 'Floral Meaning', 'A soft guide to choosing blush, white, lavender, red, yellow, and green arrangements.', '5 min read', img('photo-1520763185298-1b434c919102')],
   ['Best Floral Gifts for Mother’s Day', 'Seasonal Gifts', 'Elegant bouquet and add-on ideas for meaningful Mother’s Day delivery.', '4 min read', img('photo-1525310072745-f49212b5ac6d')]
-].map(([title, category, excerpt, readTime, image]) => ({ title, category, excerpt, readTime, image, author: 'Ava' }));
+].map(([title, category, excerpt, readTime, image]) => ({ title, category, excerpt, readTime, image, author: 'Maryam' }));
 const galleryItems = [
   ['Bouquets', img('photo-1561181286-d3fee7d55364')],
   ['Weddings', img('photo-1526047932273-341f2a7631f9')],
@@ -216,11 +216,15 @@ function CartProvider({ children }) {
 
 function Seo({ title, description }) {
   React.useEffect(() => {
-    document.title = `${title} | Bloomé by Ava`;
+    document.title = `${title} | Bloom by Maryam`;
     const meta = document.querySelector('meta[name="description"]');
     if (meta) meta.setAttribute('content', description);
   }, [title, description]);
   return null;
+}
+
+function LogoMark() {
+  return <span className="logo-mark" aria-hidden="true"><i /><i /><i /><i /><b /></span>;
 }
 
 function Header() {
@@ -231,7 +235,7 @@ function Header() {
   ];
   return (
     <header className="site-header">
-      <Link className="brand" to="/" aria-label="Bloomé by Ava home"><span><Flower2 size={24} /></span><strong>{brand.name}</strong></Link>
+      <Link className="brand" to="/" aria-label="Bloom by Maryam home"><LogoMark /><strong>{brand.name}</strong></Link>
       <nav className="desktop-nav" aria-label="Primary navigation">
         {links.map(([href, label]) => <NavLink key={href} to={href}>{label}</NavLink>)}
       </nav>
@@ -251,7 +255,7 @@ function Footer() {
   return (
     <footer className="footer">
       <div>
-        <Link className="brand footer-brand" to="/"><span><Flower2 size={24} /></span><strong>{brand.name}</strong></Link>
+        <Link className="brand footer-brand" to="/"><LogoMark /><strong>{brand.name}</strong></Link>
         <p>Demo premium Canadian flower boutique by MSPixelPulse. Elegant bouquets, wedding florals, gifts, subscriptions, and same-day delivery experiences.</p>
       </div>
       <div><h3>Visit</h3><Link to="/shop">Shop flowers</Link><Link to="/wedding-flowers">Wedding studio</Link><Link to="/delivery-areas">Delivery areas</Link><Link to="/admin">Admin demo</Link></div>
@@ -284,10 +288,6 @@ function SectionHeading({ eyebrow, title, text }) {
 
 function PetalAnimation() {
   return <div className="petals" aria-hidden="true">{Array.from({ length: 12 }).map((_, i) => <i key={i} style={{ '--i': i }} />)}</div>;
-}
-
-function FlowerArt({ tone = 'rose', label }) {
-  return <div className={`flower-art ${tone}`} role="img" aria-label={label}><span /><span /><span /><span /><b /></div>;
 }
 
 function ImageFrame({ src, alt, className = '', children }) {
@@ -447,7 +447,7 @@ function Delivery() {
 }
 
 function About() {
-  return <PageShell title="About Ava" eyebrow="Founder story" text="Ava is a Canadian floral designer who started Bloomé by Ava with a love for soft colours, meaningful gifts, and beautifully styled arrangements. Her goal is to make every bouquet feel personal, elegant, fresh, and unforgettable."><Seo title="About" description="Founder story for Ava, a girl-owned Canadian floral boutique demo focused on freshness, sustainability, local sourcing, and personal service." /><div className="split"><Reveal><h2>Girl-owned, Canadian, and detail obsessed.</h2><p>Bloomé by Ava is written as a demo boutique that blends premium floral design with warm service, sustainable choices, local sourcing, and a behind-the-studio feel customers can trust.</p><p>Every section is shaped for a real boutique owner: studio story, values, freshness promise, local sourcing, and a calm path toward orders or consultations.</p></Reveal><Reveal className="feature-panel"><ImageFrame src={img('photo-1487070183336-b863922373d4')} alt="Founder-style floral studio table with flowers and tools" /></Reveal></div><div className="service-grid">{[
+  return <PageShell title="About Maryam" eyebrow="Founder story" text="Maryam is a Canadian floral designer who started Bloom by Maryam with a love for soft colours, meaningful gifts, and beautifully styled arrangements. Her goal is to make every bouquet feel personal, elegant, fresh, and unforgettable."><Seo title="About" description="Founder story for Maryam, a girl-owned Canadian floral boutique demo focused on freshness, sustainability, local sourcing, and personal service." /><div className="split"><Reveal><h2>Girl-owned, Canadian, and detail obsessed.</h2><p>Bloom by Maryam is written as a demo boutique that blends premium floral design with warm service, sustainable choices, local sourcing, and a behind-the-studio feel customers can trust.</p><p>Every section is shaped for a real boutique owner: studio story, values, freshness promise, local sourcing, and a calm path toward orders or consultations.</p></Reveal><Reveal className="feature-panel"><ImageFrame src={img('photo-1487070183336-b863922373d4')} alt="Founder-style floral studio table with flowers and tools" /></Reveal></div><div className="service-grid">{[
     ['Elegance', 'Soft palettes, considered spacing, and arrangements that feel special without feeling loud.', img('photo-1525310072745-f49212b5ac6d')],
     ['Care', 'Thoughtful gift notes, careful delivery language, and customer-first service moments.', img('photo-1501004318641-b39e6451bec6')],
     ['Freshness', 'Seasonal flowers, care guidance, and freshness promises made visible throughout the site.', img('photo-1490750967868-88aa4486c946')],
@@ -466,9 +466,9 @@ function Blog() {
 
 function Contact() {
   return (
-    <PageShell title="Contact Bloomé by Ava" eyebrow="We would love to help" text="Demo contact paths for orders, weddings, events, subscriptions, and delivery questions.">
-      <Seo title="Contact" description="Contact Bloomé by Ava demo flower boutique by form, phone, email, WhatsApp, business hours, Instagram, and map placeholder." />
-      <div className="contact-layout"><DemoForm title="Send a message" fields={['Full name', 'Email', 'Phone', 'Message']} /><div className="contact-card"><ImageFrame src={img('photo-1519378058457-4c29a0a2efac')} alt="Bloomé studio flowers prepared for customer pickup" /><p><Phone /> {brand.phone}</p><p><Mail /> {brand.email}</p><p><Clock /> Mon-Sat 9 AM - 6 PM</p><p><MapPin /> Toronto GTA studio demo location</p><div className="map-placeholder">Google map placeholder for demo location</div><a className="primary" href="https://wa.me/10000000000">WhatsApp Us</a></div></div>
+    <PageShell title="Contact Bloom by Maryam" eyebrow="We would love to help" text="Demo contact paths for orders, weddings, events, subscriptions, and delivery questions.">
+      <Seo title="Contact" description="Contact Bloom by Maryam demo flower boutique by form, phone, email, WhatsApp, business hours, Instagram, and map placeholder." />
+      <div className="contact-layout"><DemoForm title="Send a message" fields={['Full name', 'Email', 'Phone', 'Message']} /><div className="contact-card"><ImageFrame src={img('photo-1519378058457-4c29a0a2efac')} alt="Bloom by Maryam studio flowers prepared for customer pickup" /><p><Phone /> {brand.phone}</p><p><Mail /> {brand.email}</p><p><Clock /> Mon-Sat 9 AM - 6 PM</p><p><MapPin /> Toronto GTA studio demo location</p><div className="map-placeholder">Google map placeholder for demo location</div><a className="primary" href="https://wa.me/10000000000">WhatsApp Us</a></div></div>
     </PageShell>
   );
 }
@@ -544,11 +544,11 @@ function Testimonials() {
 }
 
 function InstagramGrid({ expanded = false }) {
-  return <section><SectionHeading eyebrow="Gallery" title="Instagram-style floral moments" /><div className="gallery-grid">{galleryItems.slice(0, expanded ? galleryItems.length : 6).map((item) => <Reveal className="gallery-card" key={item.title}><ImageFrame src={item.image} alt={`${item.title} Bloomé gallery image`} /><span>{item.title}</span></Reveal>)}</div></section>;
+  return <section><SectionHeading eyebrow="Gallery" title="Instagram-style floral moments" /><div className="gallery-grid">{galleryItems.slice(0, expanded ? galleryItems.length : 6).map((item) => <Reveal className="gallery-card" key={item.title}><ImageFrame src={item.image} alt={`${item.title} Bloom by Maryam gallery image`} /><span>{item.title}</span></Reveal>)}</div></section>;
 }
 
 function Newsletter() {
-  return <section className="newsletter"><h2>Join the Bloomé list</h2><p>Seasonal flower notes, gift reminders, wedding inspiration, and demo-only boutique updates.</p><form onSubmit={(e) => e.preventDefault()}><label>Email address<input type="email" placeholder="you@example.com" /></label><button className="primary" type="submit">Sign Up</button></form></section>;
+  return <section className="newsletter"><h2>Join the Bloom list</h2><p>Seasonal flower notes, gift reminders, wedding inspiration, and demo-only boutique updates.</p><form onSubmit={(e) => e.preventDefault()}><label>Email address<input type="email" placeholder="you@example.com" /></label><button className="primary" type="submit">Sign Up</button></form></section>;
 }
 
 function ConsultationForm() {
@@ -574,11 +574,11 @@ function EmptyState({ text, cta, label }) {
 }
 
 function AuthPage({ title, text, register = false }) {
-  return <PageShell title={title} eyebrow="Account demo" text={text}><Seo title={title} description={`${title} page for Bloomé by Ava demo accounts.`} /><div className="auth-card"><DemoForm fields={register ? ['Full name', 'Email', 'Password'] : ['Email', 'Password']} button={title} /><div className="button-row"><Link to="/customer-dashboard">Customer Dashboard</Link><Link to="/admin">Admin Dashboard</Link><Link to={register ? '/login' : '/register'}>{register ? 'Login' : 'Register'}</Link></div></div></PageShell>;
+  return <PageShell title={title} eyebrow="Account demo" text={text}><Seo title={title} description={`${title} page for Bloom by Maryam demo accounts.`} /><div className="auth-card"><DemoForm fields={register ? ['Full name', 'Email', 'Password'] : ['Email', 'Password']} button={title} /><div className="button-row"><Link to="/customer-dashboard">Customer Dashboard</Link><Link to="/admin">Admin Dashboard</Link><Link to={register ? '/login' : '/register'}>{register ? 'Login' : 'Register'}</Link></div></div></PageShell>;
 }
 
 function Dashboard({ title, items }) {
-  return <PageShell title={title} eyebrow="Account workspace" text="A polished demo dashboard for repeat flower customers."><Seo title={title} description={`${title} for Bloomé by Ava demo users.`} /><div className="dashboard-grid">{items.map((item, index) => <div className="dash-card" key={item}><PackageCheck /><p>{item}</p><strong>{index + 1}{item.includes('timeline') ? ' active' : ''}</strong></div>)}</div></PageShell>;
+  return <PageShell title={title} eyebrow="Account workspace" text="A polished demo dashboard for repeat flower customers."><Seo title={title} description={`${title} for Bloom by Maryam demo users.`} /><div className="dashboard-grid">{items.map((item, index) => <div className="dash-card" key={item}><PackageCheck /><p>{item}</p><strong>{index + 1}{item.includes('timeline') ? ' active' : ''}</strong></div>)}</div></PageShell>;
 }
 
 function AdminTable({ onEdit, onToast }) {
