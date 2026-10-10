@@ -75,3 +75,11 @@ All contact details, dashboard data, products, orders, prices, testimonials, and
 ## Credit
 
 Built as a premium flower business sales demo for MSPixelPulse Agency.
+
+## Website and demo management
+
+- **Live Website:** [https://flower.mspixelpulse.com](https://flower.mspixelpulse.com)
+- **MSPixelPulse Projects:** [MSPixelPulse Projects](https://mspixelpulse.com/projects)
+- **Aurelion Demo Library:** [Private Demo Management — Owner Access Required](https://mahakpatel.com/play/ai?view=demo-library)
+
+Category subdomains are not published here until their HTTPS website is verified. The Aurelion link is an owner-only management interface and does not grant access.
