@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
+import { submitInquiry } from './lib/mspInquiry';
 import { BrowserRouter, Link, NavLink, Route, Routes, useLocation, useParams } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
@@ -323,11 +324,6 @@ function buildOrderBody(details, items, total) {
     '',
     'Submitted from Bloom by Maryam website'
   ].join('\n');
-}
-
-function mailtoHref(details, items, total) {
-  const subject = 'New Flower Order Inquiry - Bloom by Maryam';
-  return `mailto:${business.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(buildOrderBody(details, items, total))}`;
 }
 
 function whatsappHref(message) {
@@ -748,7 +744,7 @@ function Contact() {
   return (
     <PageShell title="Contact Bloom by Maryam" eyebrow="We would love to help" text="Contact paths for orders, weddings, events, subscriptions, and delivery questions.">
       <Seo title="Contact" description="Contact Bloom by Maryam flower boutique by form, phone, email, WhatsApp, business hours, Instagram, and location section." />
-      <div className="contact-layout"><DemoForm title="Send a message" fields={['Full name', 'Email', 'Phone', 'Message']} /><div className="contact-card"><ImageFrame src={img('photo-1519378058457-4c29a0a2efac')} alt="Bloom by Maryam studio flowers prepared for customer pickup" /><p><Phone /> {brand.phone}</p><p><Mail /> {brand.email}</p><p><Clock /> Mon-Sat 9 AM - 6 PM</p><p><MapPin /> Toronto GTA studio location</p><div className="map-placeholder">Toronto GTA floral delivery area</div><div className="button-row"><Link className="primary" to="/order-inquiry"><ButtonIcon type="contact" /> Email Order</Link><a className="whatsapp-action" href={whatsappHref(productWhatsappMessage({ name: 'Custom bouquet' }))}><WhatsAppIcon /> WhatsApp Order</a></div></div></div>
+      <div className="contact-layout"><InquiryForm title="Send a message" formType="contact" fields={[['name', 'Full name'], ['email', 'Email'], ['phone', 'Phone'], ['message', 'Message']]} button="Send message" /><div className="contact-card"><ImageFrame src={img('photo-1519378058457-4c29a0a2efac')} alt="Bloom by Maryam studio flowers prepared for customer pickup" /><p><Phone /> {brand.phone}</p><p><Mail /> {brand.email}</p><p><Clock /> Mon-Sat 9 AM - 6 PM</p><p><MapPin /> Toronto GTA studio location</p><div className="map-placeholder">Toronto GTA floral delivery area</div><div className="button-row"><Link className="primary" to="/order-inquiry"><ButtonIcon type="contact" /> Email Order</Link><a className="whatsapp-action" href={whatsappHref(productWhatsappMessage({ name: 'Custom bouquet' }))}><WhatsAppIcon /> WhatsApp Order</a></div></div></div>
     </PageShell>
   );
 }
@@ -763,7 +759,8 @@ function Cart() {
 
 function OrderInquiry() {
   const { items, total } = useCart();
-  const [sent, setSent] = useState(false);
+  const [status, setStatus] = useState('idle');
+  const [error, setError] = useState('');
   const [details, setDetails] = useState({
     name: '',
     phone: '',
@@ -778,32 +775,43 @@ function OrderInquiry() {
     instructions: ''
   });
   const estimatedTotal = total ? total + 14 + total * 0.13 : 0;
-  const emailLink = mailtoHref(details, items, estimatedTotal);
   const whatsappLink = whatsappHref(buildOrderBody(details, items, estimatedTotal));
   const update = (key, value) => setDetails((current) => ({ ...current, [key]: value }));
+  const submitOrder = async (event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    setStatus('loading'); setError('');
+    const result = await submitInquiry({
+      formType: 'order', name: details.name, email: details.email, phone: details.phone, service: 'Flower order inquiry',
+      message: buildOrderBody(details, items, estimatedTotal),
+      details: { deliveryAddress: details.address, city: details.city, postalCode: details.postal, deliveryDate: details.date, deliveryTime: details.time, occasion: details.occasion, giftMessage: details.giftMessage, estimatedTotal: currency(estimatedTotal), itemCount: String(items.reduce((sum, item) => sum + item.qty, 0)) },
+      consent: data.get('consent') === 'on', honeypot: String(data.get('company_website') || '')
+    });
+    if (result.ok) setStatus('sent'); else { setStatus('error'); setError(result.error); }
+  };
   return (
-    <PageShell title="Order Inquiry" eyebrow="Email or WhatsApp" text="No login required. Fill in delivery details, then send the prepared email or WhatsApp message.">
-      <Seo title="Order Inquiry" description="Bloom by Maryam no-login flower order inquiry form with mailto and WhatsApp fallback." />
+    <PageShell title="Order Inquiry" eyebrow="Send an order inquiry" text="No login required. Fill in delivery details and send your inquiry; WhatsApp is available as an alternative.">
+      <Seo title="Order Inquiry" description="Bloom by Maryam no-login flower order inquiry form with WhatsApp alternative." />
       <div className="order-layout">
-        <form className="demo-form order-form" onSubmit={(event) => { event.preventDefault(); setSent(true); }}>
+        <form className="demo-form order-form" onSubmit={submitOrder}>
           <h2>Delivery details</h2>
-          <div className="form-grid"><label>Customer full name<input value={details.name} onChange={(e) => update('name', e.target.value)} required /></label><label>Customer phone<input value={details.phone} onChange={(e) => update('phone', e.target.value)} required /></label></div>
-          <label>Customer email<input type="email" value={details.email} onChange={(e) => update('email', e.target.value)} /></label>
-          <label>Delivery address<input value={details.address} onChange={(e) => update('address', e.target.value)} /></label>
-          <div className="form-grid"><label>City<input value={details.city} onChange={(e) => update('city', e.target.value)} placeholder={business.city} /></label><label>Postal code<input value={details.postal} onChange={(e) => update('postal', e.target.value)} /></label></div>
-          <div className="form-grid"><label>Preferred delivery date<input type="date" value={details.date} onChange={(e) => update('date', e.target.value)} /></label><label>Preferred delivery time<select value={details.time} onChange={(e) => update('time', e.target.value)}><option>10 AM - 1 PM</option><option>1 PM - 4 PM</option><option>4 PM - 7 PM</option></select></label></div>
-          <label>Occasion<input value={details.occasion} onChange={(e) => update('occasion', e.target.value)} placeholder="Birthday, sympathy, wedding, thank you..." /></label>
-          <label>Gift message<textarea rows="3" value={details.giftMessage} onChange={(e) => update('giftMessage', e.target.value)} /></label>
-          <label>Special instructions<textarea rows="4" value={details.instructions} onChange={(e) => update('instructions', e.target.value)} placeholder="Add-ons, colours, recipient notes, delivery instructions..." /></label>
-          <button className="primary" type="submit"><ButtonIcon type="send" /> Prepare Order Inquiry</button>
-          {sent && <div className="success order-success"><Sparkles /><span>Order inquiry prepared. Use email or WhatsApp below to send it.</span></div>}
+          <div className="form-grid"><label>Customer full name<input name="name" autoComplete="name" value={details.name} onChange={(e) => update('name', e.target.value)} required /></label><label>Customer phone<input name="phone" type="tel" autoComplete="tel" value={details.phone} onChange={(e) => update('phone', e.target.value)} required /></label></div>
+          <label>Customer email<input name="email" type="email" autoComplete="email" required value={details.email} onChange={(e) => update('email', e.target.value)} /></label>
+          <label>Delivery address<input name="address" value={details.address} onChange={(e) => update('address', e.target.value)} /></label>
+          <div className="form-grid"><label>City<input name="city" value={details.city} onChange={(e) => update('city', e.target.value)} placeholder={business.city} /></label><label>Postal code<input name="postal" value={details.postal} onChange={(e) => update('postal', e.target.value)} /></label></div>
+          <div className="form-grid"><label>Preferred delivery date<input name="date" type="date" value={details.date} onChange={(e) => update('date', e.target.value)} /></label><label>Preferred delivery time<select name="time" value={details.time} onChange={(e) => update('time', e.target.value)}><option>10 AM - 1 PM</option><option>1 PM - 4 PM</option><option>4 PM - 7 PM</option></select></label></div>
+          <label>Occasion<input name="occasion" value={details.occasion} onChange={(e) => update('occasion', e.target.value)} placeholder="Birthday, sympathy, wedding, thank you..." /></label>
+          <label>Gift message<textarea name="giftMessage" rows="3" value={details.giftMessage} onChange={(e) => update('giftMessage', e.target.value)} /></label>
+          <label>Special instructions<textarea name="instructions" rows="4" value={details.instructions} onChange={(e) => update('instructions', e.target.value)} placeholder="Add-ons, colours, recipient notes, delivery instructions..." /></label>
+          <InquiryExtras error={error} />
+          <button className="primary" type="submit" disabled={status === 'loading' || status === 'sent'}><ButtonIcon type="send" /> {status === 'loading' ? 'Sending…' : status === 'sent' ? 'Inquiry sent' : 'Send Order Inquiry'}</button>
+          {status === 'sent' && <div className="success order-success" role="status"><Sparkles /><span>Your demo order inquiry was received by MSPixelPulse and someone will reply by email. No order has been placed or charged.</span></div>}
         </form>
         <aside className="summary order-summary">
           <h2>Prepared inquiry</h2>
           <pre>{buildOrderBody(details, items, estimatedTotal)}</pre>
-          <a className="primary full" href={emailLink}><ButtonIcon type="contact" /> Send Email Inquiry</a>
-          <a className="whatsapp-action full" href={whatsappLink}><WhatsAppIcon /> Order on WhatsApp</a>
-          <p className="integration-note">This inquiry can be sent by email or WhatsApp. A production form handler can be connected when live email sending is required.</p>
+          <a className="whatsapp-action full" href={whatsappLink}><WhatsAppIcon /> Or send it on WhatsApp</a>
+          <p className="integration-note">Demo website: submitting the form sends this inquiry to the MSPixelPulse inbox for an email reply. No order is placed, no payment is taken. WhatsApp is an alternative way to reach the boutique.</p>
         </aside>
       </div>
     </PageShell>
@@ -834,7 +842,7 @@ function AdminDashboard() {
         ['Revenue', '$8,420', BadgeDollarSign], ['Today’s orders', '24', ShoppingBag], ['Pending deliveries', '11', Truck], ['Low stock flowers', '6', Leaf], ['New wedding leads', '5', CalendarDays], ['Recent customers', '38', User]
       ].map(([label, value, Icon]) => <div className="dash-card" key={label}><Icon /><p>{label}</p><strong>{value}</strong></div>)}</div>
       <div className="admin-layout"><aside className="admin-sidebar">{['Products', 'Orders', 'Wedding leads', 'Subscriptions', 'Testimonials', 'Coupons', 'Delivery zones', 'Messages'].map((item) => <button key={item}><LayoutDashboard size={16} />{item}</button>)}</aside><div className="admin-main"><div className="admin-toolbar"><label><Search size={16} /><input placeholder="Search table" /></label><button onClick={() => setModal(true)}><Plus size={16} /> Add product</button><button onClick={() => show('Demo filter applied')}><ChevronDown size={16} /> Filter</button></div><AdminTable onEdit={() => setModal(true)} onToast={show} /></div></div>
-      {modal && <Modal title="Edit product demo" onClose={() => setModal(false)}><DemoForm title="Product details" fields={['Product name', 'Price', 'Category', 'Colour', 'Availability']} button="Save demo product" onSuccess={() => { setModal(false); show('Demo product saved'); }} /></Modal>}
+      {modal && <Modal title="Edit product demo" onClose={() => setModal(false)}><DemoForm title="Product details" fields={['Product name', 'Price', 'Category', 'Colour', 'Availability']} button="Save demo product" onSuccess={() => { setModal(false); show('Demo only — product changes are not saved'); }} /></Modal>}
     </PageShell>
   );
 }
@@ -895,13 +903,45 @@ function InstagramGrid({ expanded = false }) {
 }
 
 function ConsultationForm() {
-  return <div className="form-panel"><h2>Wedding consultation form</h2><DemoForm fields={['Full name', 'Email', 'Phone', 'Wedding date', 'Venue', 'City', 'Guest count', 'Budget range', 'Colour palette', 'Flower preferences', 'Inspiration upload demo field', 'Notes']} button="Submit consultation request" /><div className="button-row"><Link className="secondary" to="/order-inquiry"><ButtonIcon type="contact" /> Email Wedding Inquiry</Link><a className="whatsapp-action" href={whatsappHref(`Hi ${business.businessName}, I would like to book a wedding flower consultation.\nWedding Date:\nVenue:\nCity:\nGuest Count:\nBudget:\nMy Name:\nMy Phone:`)}><WhatsAppIcon /> WhatsApp Wedding Inquiry</a></div></div>;
+  return <div className="form-panel"><h2>Wedding consultation form</h2><InquiryForm formType="consultation" service="Wedding consultation" fields={[['name', 'Full name'], ['email', 'Email'], ['phone', 'Phone'], ['weddingDate', 'Wedding date'], ['venue', 'Venue'], ['city', 'City'], ['guestCount', 'Guest count'], ['budgetRange', 'Budget range'], ['colourPalette', 'Colour palette'], ['flowerPreferences', 'Flower preferences'], ['upload', 'Inspiration upload demo field'], ['message', 'Notes']]} button="Submit consultation request" /><div className="button-row"><Link className="secondary" to="/order-inquiry"><ButtonIcon type="contact" /> Email Wedding Inquiry</Link><a className="whatsapp-action" href={whatsappHref(`Hi ${business.businessName}, I would like to book a wedding flower consultation.\nWedding Date:\nVenue:\nCity:\nGuest Count:\nBudget:\nMy Name:\nMy Phone:`)}><WhatsAppIcon /> WhatsApp Wedding Inquiry</a></div></div>;
 }
 
+const CONSENT_LABEL = 'I agree to be contacted about this request. This is a demo website; no booking, order or appointment is created.';
+const hiddenStyle = { position: 'absolute', left: '-9999px', width: '1px', height: '1px', overflow: 'hidden' };
+
+function InquiryExtras({ error }) {
+  return <>
+    <div style={hiddenStyle} aria-hidden="true"><label>Company website<input type="text" name="company_website" tabIndex={-1} autoComplete="off" /></label></div>
+    <label style={{ display: 'flex', alignItems: 'flex-start', gap: '.6rem' }}><input type="checkbox" name="consent" required style={{ width: 'auto', marginTop: '.25rem' }} /><span>{CONSENT_LABEL}</span></label>
+    {error && <p className="integration-note" role="alert" style={{ color: '#9b2c2c' }}>{error}</p>}
+  </>;
+}
+
+const INQUIRY_SUCCESS = 'Thank you. Your demo request was received by MSPixelPulse and someone will reply by email. No order, booking or appointment has been created.';
+
+/** Real inquiry form: posts to the central MSPixelPulse pipeline. `fields` is [[name, label], ...]; name/email/phone/message map directly, other names go into details. */
+function InquiryForm({ title, fields, button = 'Submit', formType = 'contact', service }) {
+  const [status, setStatus] = useState('idle');
+  const [error, setError] = useState('');
+  const submit = async (event) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    const v = (key) => String(data.get(key) || '');
+    const details = {};
+    fields.forEach(([name]) => { if (!['name', 'email', 'phone', 'message', 'upload'].includes(name)) details[name] = v(name); });
+    setStatus('loading'); setError('');
+    const result = await submitInquiry({ formType, service, name: v('name'), email: v('email'), phone: v('phone'), message: v('message') || `${service || 'Website'} inquiry (demo).`, details, consent: data.get('consent') === 'on', honeypot: v('company_website') });
+    if (result.ok) setStatus('sent'); else { setStatus('error'); setError(result.error); }
+  };
+  if (status === 'sent') return <div className="demo-form" role="status">{title && <h2>{title}</h2>}<p className="success">{INQUIRY_SUCCESS}</p></div>;
+  return <form className="demo-form" onSubmit={submit}>{title && <h2>{title}</h2>}{fields.map(([name, label]) => <label key={name}>{label}{name === 'message' ? <textarea name="message" rows="4" required /> : name === 'upload' ? <span className="upload"><Upload size={16} /> Add inspiration image (demo only, not uploaded)</span> : <input name={name} type={name === 'email' ? 'email' : name.toLowerCase().includes('date') ? 'date' : name === 'phone' ? 'tel' : 'text'} required={['name', 'email'].includes(name)} autoComplete={name === 'name' ? 'name' : name === 'email' ? 'email' : name === 'phone' ? 'tel' : undefined} />}</label>)}<InquiryExtras error={error} /><button className="primary" type="submit" disabled={status === 'loading'}><ButtonIcon type="send" /> {status === 'loading' ? 'Sending…' : button}</button><p className="integration-note">Demo website: your message goes to the MSPixelPulse inquiry inbox and is answered by email. No order, booking or appointment is created.</p></form>;
+}
+
+/** Demo-only UI (login, register, admin product edit). Nothing is submitted or saved anywhere. */
 function DemoForm({ title, fields, button = 'Submit', onSuccess }) {
-  const [sent, setSent] = useState(false);
-  const submit = (event) => { event.preventDefault(); setSent(true); onSuccess?.(); };
-  return <form className="demo-form" onSubmit={submit}>{title && <h2>{title}</h2>}{fields.map((field) => <label key={field}>{field}{field.toLowerCase().includes('message') || field === 'Notes' ? <textarea rows="4" /> : field.toLowerCase().includes('upload') ? <span className="upload"><Upload size={16} /> Add inspiration image</span> : <input type={field.toLowerCase().includes('email') ? 'email' : field.toLowerCase().includes('date') ? 'date' : 'text'} />}</label>)}<button className="primary" type="submit"><ButtonIcon type="send" /> {button}</button>{sent && <p className="success">Your message is ready to review.</p>}</form>;
+  const [touched, setTouched] = useState(false);
+  const submit = (event) => { event.preventDefault(); setTouched(true); onSuccess?.(); };
+  return <form className="demo-form" onSubmit={submit}>{title && <h2>{title}</h2>}{fields.map((field) => { const name = field.toLowerCase().replace(/[^a-z0-9]+/g, '_'); return <label key={field}>{field}{field.toLowerCase().includes('message') || field === 'Notes' ? <textarea name={name} rows="4" /> : field.toLowerCase().includes('upload') ? <span className="upload"><Upload size={16} /> Add inspiration image</span> : <input name={name} type={field.toLowerCase().includes('password') ? 'password' : field.toLowerCase().includes('email') ? 'email' : field.toLowerCase().includes('date') ? 'date' : 'text'} autoComplete={field.toLowerCase().includes('password') ? 'off' : undefined} />}</label>; })}<button className="primary" type="submit"><ButtonIcon type="send" /> {button}</button><p className="integration-note">{touched ? 'Demo only — nothing was submitted or saved. ' : ''}This is a non-functional demo screen: no account is created and no data is stored.</p></form>;
 }
 
 function FAQ() {
